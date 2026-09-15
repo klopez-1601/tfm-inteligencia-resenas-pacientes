@@ -668,6 +668,22 @@ una herramienta de trabajo. Para el fármaco seleccionado, el sistema puntúa
 todas sus reseñas y las ordena por probabilidad de ser negativas. El analista
 no lee 4.925 opiniones: lee las que el modelo sitúa arriba.
 
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_perfil}
+  \caption{Perfil de \textit{Levonorgestrel}. La herramienta resume 4.925
+           reseñas en cuatro indicadores, los contrasta con la media del corpus
+           y desglosa de qué hablan los pacientes con la valoración asociada a
+           cada aspecto.}
+  \label{fig:app_perfil}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_perfil_evolucion}
+  \caption{Condiciones tratadas y evolución de la valoración media. El descenso
+           sostenido desde 2014 es el tipo de señal que justifica abrir una
+           revisión.}
+\end{figure}
+
 El valor de hacerlo con el modelo, y no ordenando por la valoración que el
 paciente declaró, se ve en un caso real de \textit{Levonorgestrel}. Entre las
 reseñas que el modelo sitúa como más críticas aparece una con
@@ -675,6 +691,15 @@ reseñas que el modelo sitúa como más críticas aparece una con
 sistema de alertas basado en estrellas señalaría— cuyo texto dice simplemente
 \textit{«It did not work»}. El modelo le asigna una probabilidad de sentimiento
 positivo del 0,1\,\%.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_priorizadas}
+  \caption{Reseñas de \textit{Levonorgestrel} ordenadas por el modelo. La
+           segunda —\textit{«It did not work»}— tiene una valoración declarada
+           de 6 sobre 10, pero el modelo la sitúa entre las más críticas del
+           medicamento.}
+  \label{fig:app_priorizadas}
+\end{figure}
 
 \ideaclave{Ordenar por la puntuación numérica deja escapar las reseñas cuya
 valoración es tibia pero cuyo contenido es claramente negativo. Leer el texto
