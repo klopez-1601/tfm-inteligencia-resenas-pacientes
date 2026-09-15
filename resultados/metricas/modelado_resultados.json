@@ -1,0 +1,410 @@
+{
+  "n_train": 158432,
+  "n_test": 36327,
+  "pct_positivas_train": 0.7188,
+  "estrategia_particion": "GroupShuffleSplit agrupado por drugName (80/20)",
+  "mejor_modelo": "SVM lineal",
+  "validacion_cruzada_f1_media": 0.9358,
+  "validacion_cruzada_f1_desv": 0.0006,
+  "resultados": [
+    {
+      "modelo": "Baseline (clase mayoritaria)",
+      "accuracy": 0.761,
+      "precision": 0.761,
+      "recall": 1.0,
+      "f1": 0.8643,
+      "f1_macro": 0.4321,
+      "roc_auc": 0.5,
+      "segundos_entrenamiento": 0.0,
+      "informe": {
+        "0": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 8683.0
+        },
+        "1": {
+          "precision": 0.7609766840091392,
+          "recall": 1.0,
+          "f1-score": 0.8642666208125557,
+          "support": 27644.0
+        },
+        "accuracy": 0.7609766840091392,
+        "macro avg": {
+          "precision": 0.3804883420045696,
+          "recall": 0.5,
+          "f1-score": 0.43213331040627784,
+          "support": 36327.0
+        },
+        "weighted avg": {
+          "precision": 0.5790855136055453,
+          "recall": 0.7609766840091392,
+          "f1-score": 0.6576867472057227,
+          "support": 36327.0
+        }
+      }
+    },
+    {
+      "modelo": "Naive Bayes (Complement)",
+      "accuracy": 0.8594,
+      "precision": 0.9358,
+      "recall": 0.8753,
+      "f1": 0.9045,
+      "f1_macro": 0.8189,
+      "roc_auc": 0.9235,
+      "segundos_entrenamiento": 0.0,
+      "informe": {
+        "0": {
+          "precision": 0.6708062667176156,
+          "recall": 0.8087066682022342,
+          "f1-score": 0.7333298522270377,
+          "support": 8683.0
+        },
+        "1": {
+          "precision": 0.9357670443559303,
+          "recall": 0.8753436550426855,
+          "f1-score": 0.9045474085565295,
+          "support": 27644.0
+        },
+        "accuracy": 0.8594158614804416,
+        "macro avg": {
+          "precision": 0.8032866555367729,
+          "recall": 0.8420251616224599,
+          "f1-score": 0.8189386303917836,
+          "support": 36327.0
+        },
+        "weighted avg": {
+          "precision": 0.8724352406773032,
+          "recall": 0.8594158614804416,
+          "f1-score": 0.8636224204868024,
+          "support": 36327.0
+        }
+      }
+    },
+    {
+      "modelo": "Regresión Logística",
+      "accuracy": 0.9171,
+      "precision": 0.9608,
+      "recall": 0.9291,
+      "f1": 0.9446,
+      "f1_macro": 0.89,
+      "roc_auc": 0.9647,
+      "segundos_entrenamiento": 3.3,
+      "informe": {
+        "0": {
+          "precision": 0.7956227201667535,
+          "recall": 0.8791892203155591,
+          "f1-score": 0.8353211511106248,
+          "support": 8683.0
+        },
+        "1": {
+          "precision": 0.9607586413287446,
+          "recall": 0.9290623643466936,
+          "f1-score": 0.9446446961894953,
+          "support": 27644.0
+        },
+        "accuracy": 0.9171415200814821,
+        "macro avg": {
+          "precision": 0.8781906807477491,
+          "recall": 0.9041257923311263,
+          "f1-score": 0.88998292365006,
+          "support": 36327.0
+        },
+        "weighted avg": {
+          "precision": 0.9212873058634,
+          "recall": 0.9171415200814821,
+          "f1-score": 0.9185138199288674,
+          "support": 36327.0
+        }
+      }
+    },
+    {
+      "modelo": "SVM lineal",
+      "accuracy": 0.9221,
+      "precision": 0.9379,
+      "recall": 0.9613,
+      "f1": 0.9494,
+      "f1_macro": 0.8898,
+      "roc_auc": 0.9649,
+      "segundos_entrenamiento": 5.3,
+      "informe": {
+        "0": {
+          "precision": 0.8661161161161162,
+          "recall": 0.7971899113209721,
+          "f1-score": 0.8302248875562219,
+          "support": 8683.0
+        },
+        "1": {
+          "precision": 0.9378507146638433,
+          "recall": 0.9612935899290985,
+          "f1-score": 0.94942746387038,
+          "support": 27644.0
+        },
+        "accuracy": 0.9220689845018857,
+        "macro avg": {
+          "precision": 0.9019834153899797,
+          "recall": 0.8792417506250353,
+          "f1-score": 0.889826175713301,
+          "support": 36327.0
+        },
+        "weighted avg": {
+          "precision": 0.9207044730476924,
+          "recall": 0.9220689845018857,
+          "f1-score": 0.9209352688051163,
+          "support": 36327.0
+        }
+      }
+    },
+    {
+      "modelo": "Random Forest (sobre LSA)",
+      "accuracy": 0.8578,
+      "precision": 0.9227,
+      "recall": 0.8876,
+      "f1": 0.9048,
+      "f1_macro": 0.8122,
+      "roc_auc": 0.9092,
+      "segundos_entrenamiento": 30.3,
+      "informe": {
+        "0": {
+          "precision": 0.6807395993836671,
+          "recall": 0.7632154785212484,
+          "f1-score": 0.7196221088066023,
+          "support": 8683.0
+        },
+        "1": {
+          "precision": 0.9226835138387485,
+          "recall": 0.8875705397192881,
+          "f1-score": 0.9047864886791062,
+          "support": 27644.0
+        },
+        "accuracy": 0.8578467806314862,
+        "macro avg": {
+          "precision": 0.8017115566112079,
+          "recall": 0.8253930091202683,
+          "f1-score": 0.8122042987428542,
+          "support": 36327.0
+        },
+        "weighted avg": {
+          "precision": 0.8648532771218858,
+          "recall": 0.8578467806314862,
+          "f1-score": 0.860527884598589,
+          "support": 36327.0
+        }
+      }
+    }
+  ],
+  "modelo_usado_para_explicabilidad": "Regresión Logística",
+  "terminos_influyentes": {
+    "hacia_negativo": [
+      {
+        "termino": "worse",
+        "peso": -14.1398
+      },
+      {
+        "termino": "disappointed",
+        "peso": -11.3165
+      },
+      {
+        "termino": "worst",
+        "peso": -9.9006
+      },
+      {
+        "termino": "don recommend",
+        "peso": -9.5895
+      },
+      {
+        "termino": "gained",
+        "peso": -8.8566
+      },
+      {
+        "termino": "useless",
+        "peso": -8.6711
+      },
+      {
+        "termino": "horrible",
+        "peso": -8.3825
+      },
+      {
+        "termino": "stopped taking",
+        "peso": -8.2987
+      },
+      {
+        "termino": "wouldn recommend",
+        "peso": -8.0809
+      },
+      {
+        "termino": "ruined",
+        "peso": -7.7459
+      },
+      {
+        "termino": "doesn work",
+        "peso": -7.3848
+      },
+      {
+        "termino": "depressed",
+        "peso": -7.3461
+      },
+      {
+        "termino": "waste",
+        "peso": -7.287
+      },
+      {
+        "termino": "stay away",
+        "peso": -6.8893
+      },
+      {
+        "termino": "glad works",
+        "peso": -6.87
+      },
+      {
+        "termino": "terrible",
+        "peso": -6.8178
+      },
+      {
+        "termino": "hopes",
+        "peso": -6.804
+      },
+      {
+        "termino": "removed",
+        "peso": -6.7312
+      },
+      {
+        "termino": "ridiculous",
+        "peso": -6.578
+      },
+      {
+        "termino": "nightmare",
+        "peso": -6.5349
+      },
+      {
+        "termino": "poison",
+        "peso": -6.4952
+      },
+      {
+        "termino": "bleeding",
+        "peso": -6.4667
+      },
+      {
+        "termino": "calling",
+        "peso": -6.1952
+      },
+      {
+        "termino": "garbage",
+        "peso": -6.0932
+      },
+      {
+        "termino": "awful",
+        "peso": -6.0131
+      }
+    ],
+    "hacia_positivo": [
+      {
+        "termino": "love",
+        "peso": 19.406
+      },
+      {
+        "termino": "amazing",
+        "peso": 15.3785
+      },
+      {
+        "termino": "miracle",
+        "peso": 14.9193
+      },
+      {
+        "termino": "changed life",
+        "peso": 12.7214
+      },
+      {
+        "termino": "saved",
+        "peso": 12.6956
+      },
+      {
+        "termino": "great",
+        "peso": 12.2469
+      },
+      {
+        "termino": "works",
+        "peso": 12.1092
+      },
+      {
+        "termino": "best",
+        "peso": 12.0654
+      },
+      {
+        "termino": "years",
+        "peso": 11.0892
+      },
+      {
+        "termino": "excellent",
+        "peso": 10.4385
+      },
+      {
+        "termino": "wonderful",
+        "peso": 10.3791
+      },
+      {
+        "termino": "highly recommend",
+        "peso": 9.1926
+      },
+      {
+        "termino": "grateful",
+        "peso": 9.1917
+      },
+      {
+        "termino": "thankful",
+        "peso": 9.0389
+      },
+      {
+        "termino": "overall",
+        "peso": 9.0378
+      },
+      {
+        "termino": "helps",
+        "peso": 8.9848
+      },
+      {
+        "termino": "awesome",
+        "peso": 8.9586
+      },
+      {
+        "termino": "happy",
+        "peso": 8.9441
+      },
+      {
+        "termino": "far good",
+        "peso": 8.9257
+      },
+      {
+        "termino": "pleased",
+        "peso": 8.8206
+      },
+      {
+        "termino": "complaint",
+        "peso": 8.7127
+      },
+      {
+        "termino": "thank",
+        "peso": 8.6671
+      },
+      {
+        "termino": "wonders",
+        "peso": 8.5736
+      },
+      {
+        "termino": "cleared",
+        "peso": 8.5662
+      },
+      {
+        "termino": "gone",
+        "peso": 8.5156
+      }
+    ]
+  },
+  "justificaciones": {
+    "Baseline (clase mayoritaria)": "Referencia mínima. Con clases desbalanceadas su F1 ya es alto, lo que obliga a mirar ROC-AUC y F1-macro, no solo accuracy.",
+    "Naive Bayes (Complement)": "Muy rápido y sólido en texto; la variante Complement corrige el sesgo del NB multinomial cuando las clases están desbalanceadas. Debilidad: asume independencia entre términos.",
+    "Regresión Logística": "Lineal, probabilístico e interpretable: sus coeficientes permiten explicar la predicción a un perfil de negocio. Se usa el solver liblinear, muy eficiente en problemas binarios y dispersos.",
+    "SVM lineal": "Referencia clásica en clasificación de texto de alta dimensión. Se calibra para obtener probabilidades, al coste de triplicar el tiempo de entrenamiento.",
+    "Random Forest (sobre LSA)": "No lineal y basado en árboles: comprueba si existen interacciones que los modelos lineales no capturan. Requiere reducir antes la dimensionalidad con SVD, lo que sacrifica interpretabilidad."
+  }
+}

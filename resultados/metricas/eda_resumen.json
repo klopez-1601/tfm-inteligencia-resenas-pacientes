@@ -1,0 +1,151 @@
+{
+  "n_reseñas": 213807,
+  "duplicados_eliminados": 85,
+  "n_farmacos": 3658,
+  "n_condiciones": 836,
+  "rango_fechas": [
+    "2008-02-24",
+    "2017-12-12"
+  ],
+  "rating_medio": 6.991,
+  "rating_mediana": 8.0,
+  "rating_desv_tipica": 3.276,
+  "longitud_media_caracteres": 445.8,
+  "longitud_media_palabras": 84.7,
+  "valores_ausentes": {
+    "uniqueID": 0,
+    "drugName": 0,
+    "condition": 1194,
+    "review": 0,
+    "rating": 0,
+    "date": 0,
+    "usefulCount": 0
+  },
+  "reparto_sentimiento": {
+    "positivo": 141524,
+    "negativo": 53235,
+    "<NA>": 19048
+  },
+  "n_etiquetadas": 194759,
+  "pct_positivas_sobre_etiquetadas": 72.67,
+  "condiciones_peor_valoradas": [
+    {
+      "condition": "Vaginal Yeast Infection",
+      "n": 3085,
+      "media": 4.076
+    },
+    {
+      "condition": "Abnormal Uterine Bleeding",
+      "n": 2744,
+      "media": 4.375
+    },
+    {
+      "condition": "Urinary Tract Infection",
+      "n": 1747,
+      "media": 5.372
+    },
+    {
+      "condition": "Bladder Infection",
+      "n": 525,
+      "media": 5.419
+    },
+    {
+      "condition": "High Cholesterol",
+      "n": 815,
+      "media": 5.796
+    },
+    {
+      "condition": "Sinusitis",
+      "n": 1124,
+      "media": 5.899
+    },
+    {
+      "condition": "Overactive Bladde",
+      "n": 917,
+      "media": 5.944
+    },
+    {
+      "condition": "Bronchitis",
+      "n": 707,
+      "media": 5.976
+    },
+    {
+      "condition": "Bacterial Infection",
+      "n": 1251,
+      "media": 5.976
+    },
+    {
+      "condition": "Endometriosis",
+      "n": 750,
+      "media": 6.045
+    }
+  ],
+  "condiciones_mejor_valoradas": [
+    {
+      "condition": "Panic Disorde",
+      "n": 1931,
+      "media": 8.302
+    },
+    {
+      "condition": "Erectile Dysfunction",
+      "n": 1467,
+      "media": 8.372
+    },
+    {
+      "condition": "Hepatitis C",
+      "n": 897,
+      "media": 8.405
+    },
+    {
+      "condition": "Emergency Contraception",
+      "n": 3282,
+      "media": 8.458
+    },
+    {
+      "condition": "Opiate Dependence",
+      "n": 1477,
+      "media": 8.572
+    },
+    {
+      "condition": "HIV Infection",
+      "n": 817,
+      "media": 8.633
+    },
+    {
+      "condition": "Headache",
+      "n": 625,
+      "media": 8.728
+    },
+    {
+      "condition": "Smoking Cessation",
+      "n": 2440,
+      "media": 8.729
+    },
+    {
+      "condition": "Alcohol Dependence",
+      "n": 518,
+      "media": 8.83
+    },
+    {
+      "condition": "Hyperhidrosis",
+      "n": 917,
+      "media": 8.902
+    }
+  ],
+  "contraste_longitud": {
+    "prueba": "Mann-Whitney U (dos colas)",
+    "hipotesis_nula": "La longitud de la reseña no difiere entre positivas y negativas",
+    "mediana_palabras_positivas": 86.0,
+    "mediana_palabras_negativas": 79.0,
+    "estadistico_U": 3989226869.5,
+    "p_valor": 8.0301532012704e-90,
+    "significativo_al_5pct": true
+  },
+  "correlacion_utilidad": {
+    "prueba": "Correlación de Spearman entre valoración y usefulCount",
+    "rho": 0.2815,
+    "p_valor": 0.0,
+    "utilidad_media_resenas_extremas": 30.84,
+    "utilidad_media_resenas_moderadas": 22.66
+  }
+}
