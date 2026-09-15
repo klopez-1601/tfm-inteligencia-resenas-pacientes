@@ -29,14 +29,18 @@ st.set_page_config(page_title="Inteligencia de reseñas de pacientes",
 EJEMPLOS = {
     "— Escribir mi propia reseña —": "",
     "Reseña favorable": (
-        "I have been taking this medication for three months and it has completely "
-        "changed my life. The pain is finally under control and I can sleep again. "
-        "Mild dry mouth at the beginning but it went away after two weeks."),
+        "I have been taking this medication twice a day for three months and it "
+        "works better than anything I tried before. It gave me real relief from "
+        "the pain and I can finally sleep again. Mild dry mouth at the beginning "
+        "but it went away after two weeks."),
     "Reseña desfavorable": (
         "Worst experience ever. After only four days I had severe nausea, constant "
         "headaches and could not get out of bed. It did nothing for my symptoms and "
         "the side effects were unbearable. I stopped taking it immediately."),
-    "Reseña ambigua": (
+    # Caso mixto: el modelo lo clasifica como positivo con alta confianza pese a
+    # que la paciente se plantea abandonar. Ilustra la limitación descrita en la
+    # memoria (el modelo detecta peor lo negativo) y justifica el umbral de alerta.
+    "Reseña mixta (caso difícil)": (
         "It works reasonably well for the pain, but the weight gain has been hard to "
         "deal with. Not sure if I will continue, I am weighing the pros and cons."),
 }
@@ -67,7 +71,11 @@ def explicar(modelo, texto: str, n: int = 10):
         from lime.lime_text import LimeTextExplainer
     except ImportError:
         return None
-    explicador = LimeTextExplainer(class_names=["negativo", "positivo"])
+    # random_state fijo: LIME estima la explicación por muestreo aleatorio, de
+    # modo que sin semilla los pesos cambian ligeramente en cada ejecución.
+    # Fijarla garantiza que las capturas de la memoria sean reproducibles.
+    explicador = LimeTextExplainer(class_names=["negativo", "positivo"],
+                                   random_state=42)
     exp = explicador.explain_instance(texto, modelo.predict_proba,
                                       num_features=n, num_samples=600)
     return exp.as_list()
@@ -162,16 +170,26 @@ if analizar and texto.strip():
     else:
         df_pesos = (pd.DataFrame(pesos, columns=["Término", "Peso"])
                       .sort_values("Peso"))
+
+        # Se separan por SIGNO, no por posición. Si se tomasen simplemente los
+        # cinco primeros y los cinco últimos, en una reseña muy polarizada
+        # (donde todos los pesos tienen el mismo signo) aparecerían términos
+        # bajo el encabezado equivocado.
+        hacia_neg = df_pesos[df_pesos["Peso"] < 0]
+        hacia_pos = df_pesos[df_pesos["Peso"] > 0].sort_values("Peso", ascending=False)
+
         c1, c2 = st.columns([2, 1])
         with c1:
             st.bar_chart(df_pesos.set_index("Término")["Peso"], horizontal=True)
         with c2:
-            st.markdown("**Empujan a negativo**")
-            for _, f in df_pesos.head(5).iterrows():
-                st.markdown(f"- `{f['Término']}` ({f['Peso']:.3f})")
-            st.markdown("**Empujan a positivo**")
-            for _, f in df_pesos.tail(5).iloc[::-1].iterrows():
-                st.markdown(f"- `{f['Término']}` (+{f['Peso']:.3f})")
+            if len(hacia_neg):
+                st.markdown("**Empujan a negativo**")
+                for _, f in hacia_neg.head(5).iterrows():
+                    st.markdown(f"- `{f['Término']}` ({f['Peso']:+.3f})")
+            if len(hacia_pos):
+                st.markdown("**Empujan a positivo**")
+                for _, f in hacia_pos.head(5).iterrows():
+                    st.markdown(f"- `{f['Término']}` ({f['Peso']:+.3f})")
         st.caption(
             "Valores negativos empujan la predicción hacia *negativo* y los "
             "positivos hacia *positivo*. Explicación local calculada con LIME.")

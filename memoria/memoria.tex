@@ -485,7 +485,7 @@ Su peor comportamiento se concentra además en la clase minoritaria: la
 precisión sobre reseñas negativas cae a 0,6807, frente al 0,8661 de la SVM.
 Dicho de otro modo, una de cada tres alertas que generaría sería falsa.
 
-\subsection{Dónde se equivoca el modelo}
+\subsection{Dónde se equivoca el modelo}\label{sec:errores}
 
 Las métricas agregadas esconden un desequilibrio importante entre clases:
 
@@ -624,12 +624,12 @@ satisfacción y escasa percepción de que el tratamiento funcione.
 % =====================================================================
 
 Un modelo que solo vive en un cuaderno de análisis no aporta valor. El modelo
-entrenado se ha empaquetado en una \textbf{aplicación web operativa}.
+entrenado se ha empaquetado en una \textbf{aplicación web} lista para usarse.
 
 \subsection{Arquitectura}
 
 La solución se serializa como un \textit{pipeline} único
-(\texttt{joblib}, 289~KB) que encapsula el vectorizador y el clasificador. Esto
+(\texttt{joblib}, 6,6~MB) que encapsula el vectorizador y el clasificador. Esto
 garantiza que el texto recibido en producción atraviese exactamente las mismas
 transformaciones que durante el entrenamiento, eliminando la principal fuente
 de errores en el despliegue de modelos de NLP.
@@ -640,19 +640,27 @@ mediante LIME.
 
 \subsection{Del texto a la decisión}
 
-% >>> PENDIENTE: inserta aquí dos capturas de la aplicación en funcionamiento
-%     (una reseña favorable y otra desfavorable). Ejecuta:
-%         streamlit run src/app.py
-%     y guarda las capturas en memoria/img/. Después descomenta el bloque:
-%
-% \begin{figure}[htbp]\centering
-%   \includegraphics[width=\textwidth]{img/app_captura}
-%   \caption{Aplicación analizando una reseña nueva.}
-% \end{figure}
-
 El recorrido de una reseña nueva es inmediato: el analista la pega, y el
 sistema devuelve el sentimiento previsto con su probabilidad, los aspectos
 detectados y los términos que han inclinado la decisión.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_desfavorable}
+  \caption{Reseña desfavorable. El modelo asigna una probabilidad de sentimiento
+           positivo del 0,0\,\%, dispara la alerta por situarse bajo el umbral
+           del 35\,\% y señala los términos decisivos: \textit{worst}
+           ($-0{,}060$), \textit{severe} ($-0{,}049$) y \textit{unbearable}
+           ($-0{,}041$).}
+  \label{fig:app_neg}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_favorable}
+  \caption{Reseña favorable. Además de la predicción (97,7\,\%), la aplicación
+           identifica tres aspectos distintos —eficacia, efectos secundarios y
+           posología— en un mismo texto.}
+  \label{fig:app_pos}
+\end{figure}
 
 La aplicación incorpora un \textbf{umbral de alerta configurable}
 (0,35 por defecto en lugar del 0,5 habitual). Esta decisión responde
@@ -660,6 +668,34 @@ directamente a la debilidad identificada en la sección de errores: al elevar la
 sensibilidad hacia la clase negativa se recuperan reseñas desfavorables que un
 umbral neutro dejaría escapar, a costa de revisar algunos falsos positivos.
 En farmacovigilancia, ese intercambio es claramente favorable.
+
+\subsection{Un caso que el modelo no resuelve bien}
+
+La herramienta también sirve para exponer los límites del sistema. La
+figura~\ref{fig:app_mixta} muestra una reseña mixta: la paciente reconoce que
+el medicamento funciona, pero el aumento de peso le resulta difícil de
+sobrellevar y se plantea abandonar el tratamiento.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_caso_dificil}
+  \caption{Reseña mixta. El modelo la clasifica como positiva con un 96,2\,\%
+           de confianza pese a que la paciente se plantea abandonar: el peso de
+           \textit{works} (+0,181) domina sobre los términos de duda.}
+  \label{fig:app_mixta}
+\end{figure}
+
+El modelo la clasifica como positiva con un 96,2\,\% de confianza. La
+explicación revela por qué: el término \textit{works} aporta un peso de
+$+0{,}181$, casi el triple que el mayor de los términos que expresan duda
+(\textit{pros}, $-0{,}070$; \textit{sure}, $-0{,}065$; \textit{continue},
+$-0{,}060$). El sistema detecta el vocabulario de eficacia, pero no la reserva
+que lo acompaña.
+
+\ideaclave{Este caso concreta la limitación cuantificada en la
+sección~\ref{sec:errores}: el modelo detecta peor lo negativo, y falla especialmente cuando
+la insatisfacción se expresa sin palabras negativas explícitas. Es el
+argumento que justifica bajar el umbral de alerta por debajo de 0,5 y mantener
+siempre a un revisor humano en el proceso.}
 
 % =====================================================================
 \section{Discusión orientada a negocio}

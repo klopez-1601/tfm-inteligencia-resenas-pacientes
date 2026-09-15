@@ -215,7 +215,10 @@ def explicar_casos(df: pd.DataFrame, n_casos: int = 3) -> list[dict]:
         return []
 
     modelo = joblib.load(ruta)
-    explicador = LimeTextExplainer(class_names=["negativo", "positivo"])
+    # Semilla fija: LIME estima por muestreo aleatorio y sin random_state los
+    # pesos varían entre ejecuciones, rompiendo la reproducibilidad.
+    explicador = LimeTextExplainer(class_names=["negativo", "positivo"],
+                                   random_state=RANDOM_STATE)
 
     muestra = df.sample(n_casos, random_state=RANDOM_STATE)
     salidas = []
