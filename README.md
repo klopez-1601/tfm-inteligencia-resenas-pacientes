@@ -1,7 +1,11 @@
 # TFM — Inteligencia de reseñas de pacientes (Drugs.com)
 
-Análisis de sentimiento y descubrimiento de temas sobre 215.063 reseñas reales de
-pacientes, con modelo productivizado en una aplicación.
+Análisis de sentimiento y descubrimiento de temas sobre reseñas reales de
+pacientes (215.063 en el fichero original; **213.807** tras la limpieza),
+con el modelo empaquetado en una aplicación.
+
+**Resultado principal:** F1 de 0,9494 y ROC-AUC de 0,9649 sobre 721
+medicamentos que el modelo no había visto durante el entrenamiento.
 
 **Máster en Data Science, Big Data & Business Analytics — UCM**
 Opción 1 de la guía: *Análisis de un dataset (orientación Data Scientist)*
@@ -40,7 +44,7 @@ pip install -r requirements.txt
 ```bash
 python src/eda.py                    # Análisis exploratorio + figuras
 python src/modelado.py               # Preprocesado + comparativa de modelos
-python src/topics_explicabilidad.py  # Temas (LDA/NMF) + explicabilidad
+python src/topics_explicabilidad.py  # Temas (NMF) + aspectos + explicabilidad
 streamlit run src/app.py             # Aplicación (productivización)
 ```
 
@@ -96,14 +100,25 @@ TFM_DrugReviews/
 
 ---
 
-## 5. Entrega (checklist de la guía)
+## 5. Resultados
 
-- [ ] Memoria ≤ 20 caras (sin anexos, índice ni portada), Arial/Verdana 10-11
-- [ ] Apartado de conclusiones
-- [ ] Bibliografía breve (≈ media cara)
-- [ ] Código en los anexos / repositorio accesible
-- [ ] Permisos de acceso para **Carlos Ortega** y **Santiago Mota**
-- [ ] Proyecto reproducible
-- [ ] Derechos de uso de los datos revisados
-- [ ] Vídeo ≤ 5 min en .mp4 (idealmente < 50 MB)
-- [ ] Fichero nombrado `Nombre_Apellido1_Apellido2_Titulo.zip`
+Evaluación sobre 36.327 reseñas de test, correspondientes a 721 medicamentos
+que no aparecen en el conjunto de entrenamiento.
+
+| Modelo | Accuracy | F1 | F1 macro | ROC-AUC |
+|---|---|---|---|---|
+| Baseline (clase mayoritaria) | 0,7610 | 0,8643 | 0,4321 | 0,5000 |
+| Random Forest (sobre LSA) | 0,8578 | 0,9048 | 0,8122 | 0,9092 |
+| Naive Bayes (Complement) | 0,8594 | 0,9045 | 0,8189 | 0,9235 |
+| Regresión Logística | 0,9171 | 0,9446 | 0,8900 | 0,9647 |
+| **SVM lineal** | **0,9221** | **0,9494** | 0,8898 | **0,9649** |
+
+Todas las cifras proceden de `resultados/metricas/modelado_resultados.json`
+y se regeneran ejecutando `python src/modelado.py`.
+
+---
+
+## 6. Autoría
+
+Trabajo Fin de Máster de **Keyla Lisbeth López Chamorro**.
+Tutores: Carlos Ortega y Santiago Mota.

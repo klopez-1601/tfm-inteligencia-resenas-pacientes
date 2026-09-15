@@ -7,12 +7,17 @@ justificando su uso, determinando el nivel de precisión y detallando las
 bondades y debilidades de cada técnica".
 
 Decisiones de diseño que van más allá de un AutoML y se justifican en la memoria:
-  1. Partición estratificada y agrupada por fármaco, para que el modelo se
+  1. Partición agrupada por fármaco (GroupShuffleSplit), para que el modelo se
      evalúe sobre fármacos que no ha visto en entrenamiento (evaluación honesta).
-  2. Todo el preprocesado vive dentro de un Pipeline: imposible que haya fuga
-     de información del test al entrenamiento.
-  3. Se combinan n-gramas de palabra y de carácter, útiles con texto de
-     pacientes que contiene erratas y nombres de fármacos.
+     No es estratificada: agrupar por fármaco y estratificar a la vez no es
+     posible con este splitter, y se prioriza evitar la fuga de información.
+  2. El vectorizador se ajusta UNA sola vez y solo sobre el conjunto de
+     entrenamiento; nunca ve el test, de modo que no hay fuga de información.
+     El modelo ganador se reempaqueta después en un Pipeline completo para que
+     la aplicación pueda recibir texto crudo.
+  3. Se emplean n-gramas de palabra (unigramas y bigramas). Los bigramas
+     capturan negaciones y expresiones compuestas ("stopped taking",
+     "weight gain") que un unigrama pierde.
   4. Se reporta un baseline trivial para dimensionar la mejora real.
 
 Ejecutar con:  python src/modelado.py
