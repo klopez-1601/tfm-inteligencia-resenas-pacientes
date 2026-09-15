@@ -68,8 +68,9 @@ TFM_DrugReviews/
 ├── resultados/
 │   ├── figuras/              Gráficos para la memoria
 │   └── metricas/             Métricas en JSON/CSV
-├── memoria/
-│   └── memoria.tex           Memoria en LaTeX (≤20 caras)
+├── memoria/                  La redacción del TFM
+│   ├── memoria.tex           Fuente LaTeX
+│   └── memoria.pdf           Documento final (≤20 caras)
 └── requirements.txt
 ```
 
