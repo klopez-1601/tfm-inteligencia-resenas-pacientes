@@ -142,36 +142,49 @@ mediante NLP, con despliegue de un modelo productivizable\par}
 \section{Resumen ejecutivo}
 % =====================================================================
 
-Las plataformas de salud acumulan millones de opiniones escritas por pacientes
-que hoy apenas se explotan. Dentro de ese texto libre hay información sobre
-qué medicamentos funcionan, cuáles generan efectos adversos y qué preocupa
-realmente a quien los toma. Leer ese volumen de forma manual es inviable.
+Cuando un paciente deja de tomar un medicamento porque no lo soporta, rara vez
+se lo cuenta a su médico. Lo escribe en internet. Ese texto existe, es público
+y hoy está prácticamente sin explotar: nadie puede leer cientos de miles de
+opiniones a mano.
 
-Este trabajo convierte ese texto en información accionable. Partiendo de
-\textbf{213.807 reseñas reales} de pacientes sobre \textbf{3.658 medicamentos}
-y \textbf{836 condiciones médicas}, se ha construido un sistema capaz de:
+Este trabajo convierte esas opiniones en información accionable. Sobre
+\textbf{213.807 reseñas reales} de pacientes acerca de \textbf{3.658
+medicamentos} y \textbf{836 condiciones médicas}, se ha construido un sistema
+que clasifica automáticamente el sentimiento de una reseña, descubre de qué
+hablan los pacientes y explica en qué se ha basado cada decisión.
 
-\begin{enumerate}[nosep,leftmargin=*]
-  \item clasificar automáticamente si una opinión es favorable o desfavorable;
-  \item descubrir de qué hablan los pacientes (eficacia, efectos secundarios,
-        posología, coste) sin definir esas categorías de antemano;
-  \item explicar en qué se ha basado cada decisión concreta.
-\end{enumerate}
+\textbf{Qué se ha conseguido.} El modelo seleccionado —una máquina de vectores
+de soporte lineal sobre TF-IDF— alcanza un \textbf{F1 de 0,9494} y un
+\textbf{ROC-AUC de 0,9649}. Esa cifra no procede de una evaluación cómoda: el
+conjunto de prueba contiene \textbf{721 medicamentos que el modelo nunca vio
+durante el entrenamiento}, porque una división aleatoria le habría permitido
+memorizar el vocabulario de cada fármaco y habría producido una nota
+engañosamente alta (sección~\ref{sec:particion}).
 
-El modelo seleccionado, una \textbf{máquina de vectores de soporte lineal},
-alcanza un \textbf{F1 de 0,9494} y un \textbf{ROC-AUC de 0,9649} evaluado sobre
-\textbf{721 medicamentos que nunca aparecieron durante el entrenamiento}. Esta
-condición de evaluación es deliberadamente exigente y se justifica en la
-sección~\ref{sec:particion}.
+\textbf{El hallazgo que cambia el enfoque.} Cabría esperar que un paciente
+descontento sea el que habla de efectos secundarios. Los datos dicen que no:
+mencionarlos apenas altera la valoración media (7,16 frente a 7,12), pese a
+aparecer en el 63,5\,\% de las reseñas. Lo que sí discrimina es hablar de
+\textbf{eficacia}, con casi un punto de diferencia (7,58 frente a 6,69). Los
+pacientes toleran los efectos adversos cuando el medicamento funciona. Un
+sistema de vigilancia que se limitase a rastrear menciones de efectos
+secundarios estaría mirando al sitio equivocado.
 
-El modelo se ha empaquetado en una aplicación que recibe una reseña nueva y
-devuelve, en tiempo real, la predicción, los aspectos detectados y los términos
-que han pesado en la decisión.
+\textbf{Qué se entrega.} El modelo no se queda en el cuaderno de análisis: se
+ha empaquetado en una aplicación que recibe una reseña nueva y devuelve, en
+segundos, la predicción con su probabilidad, los aspectos detectados y las
+palabras concretas que han inclinado la decisión.
 
-\ideaclave{El sistema permite detectar señales negativas sobre un medicamento
-sin leer manualmente miles de reseñas. Sobre las 213.807 opiniones analizadas,
-identifica automáticamente las 53.235 desfavorables y explica por qué lo son,
-reduciendo drásticamente el tiempo de reacción en farmacovigilancia.}
+\textbf{Qué no resuelve.} El sistema detecta el 96,1\,\% de las opiniones
+favorables pero solo el 79,7\,\% de las desfavorables, que son justamente las
+que importan. Por eso se plantea como un \textbf{filtro de priorización} —que
+ordena por urgencia un volumen inabarcable— y no como un sustituto del criterio
+humano.
+
+\ideaclave{Sobre las 36.327 reseñas del conjunto de prueba, el sistema localiza
+correctamente 6.922 opiniones desfavorables y explica por qué lo son. Revisar
+ese mismo volumen a mano, a dos minutos por reseña, exigiría más de 1.200 horas
+de trabajo.}
 
 % =====================================================================
 \section{Introducción y contexto de negocio}
@@ -624,7 +637,17 @@ satisfacción y escasa percepción de que el tratamiento funcione.
 % =====================================================================
 
 Un modelo que solo vive en un cuaderno de análisis no aporta valor. El modelo
-entrenado se ha empaquetado en una \textbf{aplicación web} lista para usarse.
+entrenado se ha empaquetado en una \textbf{aplicación web} con dos vistas, que
+responden a dos preguntas distintas del día a día de un analista:
+
+\begin{itemize}[nosep,leftmargin=*]
+  \item \textbf{Perfil del medicamento} (vista principal). ¿Qué está pasando
+        con este fármaco? Reúne todas sus reseñas y devuelve satisfacción,
+        aspectos que preocupan a los pacientes, evolución temporal y —aplicando
+        el modelo a cada reseña— cuáles conviene revisar primero.
+  \item \textbf{Analizar una reseña}. ¿Qué hago con este texto que acaba de
+        llegar? Clasifica una opinión nueva y explica la decisión.
+\end{itemize}
 
 \subsection{Arquitectura}
 
@@ -638,11 +661,31 @@ Sobre él, una interfaz en \textbf{Streamlit} expone tres funciones:
 predicción con probabilidad asociada, detección de aspectos y explicación local
 mediante LIME.
 
+\subsection{El modelo como instrumento de vigilancia}
+
+La vista de perfil es donde el modelo deja de ser un clasificador y pasa a ser
+una herramienta de trabajo. Para el fármaco seleccionado, el sistema puntúa
+todas sus reseñas y las ordena por probabilidad de ser negativas. El analista
+no lee 4.925 opiniones: lee las que el modelo sitúa arriba.
+
+El valor de hacerlo con el modelo, y no ordenando por la valoración que el
+paciente declaró, se ve en un caso real de \textit{Levonorgestrel}. Entre las
+reseñas que el modelo sitúa como más críticas aparece una con
+\textbf{valoración declarada de 6 sobre 10} —una nota intermedia que ningún
+sistema de alertas basado en estrellas señalaría— cuyo texto dice simplemente
+\textit{«It did not work»}. El modelo le asigna una probabilidad de sentimiento
+positivo del 0,1\,\%.
+
+\ideaclave{Ordenar por la puntuación numérica deja escapar las reseñas cuya
+valoración es tibia pero cuyo contenido es claramente negativo. Leer el texto
+—que es lo que hace el modelo— recupera esas señales.}
+
 \subsection{Del texto a la decisión}
 
-El recorrido de una reseña nueva es inmediato: el analista la pega, y el
-sistema devuelve el sentimiento previsto con su probabilidad, los aspectos
-detectados y los términos que han inclinado la decisión.
+La segunda vista cubre el otro escenario: una reseña nueva que acaba de
+llegar. El analista la pega y el sistema devuelve el sentimiento previsto con
+su probabilidad, los aspectos detectados y los términos que han inclinado la
+decisión.
 
 \begin{figure}[htbp]\centering
   \includegraphics[width=\textwidth]{img/app_desfavorable}
@@ -726,26 +769,67 @@ concentran la insatisfacción no son los esperados, como se ha discutido.
 \section{Conclusiones y líneas futuras}
 % =====================================================================
 
-\subsection{Conclusiones}
+\subsection{Respuesta a las preguntas planteadas}
+
+El trabajo partía de tres preguntas. Estas son las respuestas que arrojan los
+datos.
+
+\textbf{P1. ¿Puede predecirse la satisfacción del paciente solo con el texto?}
+Sí, y con margen. Sin conocer el medicamento, la condición ni la edad del
+paciente —únicamente lo que escribe— el modelo alcanza un ROC-AUC de 0,9649. La
+señal está en el lenguaje, no en los metadatos.
+
+\textbf{P2. ¿Generaliza a medicamentos que nunca ha visto?} Sí, y esta es la
+conclusión de la que más me fío, porque es la que se puso más difícil de
+demostrar. El conjunto de prueba está formado por 721 fármacos ausentes del
+entrenamiento. El modelo no ha memorizado vocabularios concretos: ha aprendido
+cómo se expresa la satisfacción.
+
+\textbf{P3. ¿Son los efectos secundarios lo que concentra la insatisfacción?}
+No. Y es el resultado más útil del trabajo precisamente porque contradice la
+intuición de partida. Lo que separa a un paciente satisfecho de uno insatisfecho
+no es sufrir efectos adversos, sino percibir que el tratamiento funciona.
+
+\subsection{Conclusiones técnicas}
 
 \begin{enumerate}[leftmargin=*]
-  \item Es posible predecir la satisfacción de un paciente a partir
-        exclusivamente del texto de su reseña, con un \textbf{F1 de 0,9494} y un
-        \textbf{ROC-AUC de 0,9649} sobre medicamentos no vistos.
-  \item Los modelos lineales sobre TF-IDF resultan muy competitivos en esta
-        tarea. La diferencia entre SVM y Regresión Logística es marginal, lo que
-        permite elegir en función de la interpretabilidad deseada.
-  \item \textbf{Aumentar la complejidad del modelo no mejora el resultado.}
-        Random Forest, pese a captar relaciones no lineales, queda cuatro puntos
-        de ROC-AUC por detrás porque se ve obligado a trabajar sobre una
-        compresión que conserva el 8,4\% de la varianza. En texto, la
-        representación pesa más que la sofisticación del algoritmo.
-  \item \textbf{Mencionar efectos secundarios no predice insatisfacción}; sí lo
-        hace la percepción de eficacia. Es el hallazgo con mayor implicación
-        práctica del trabajo.
-  \item El desequilibrio entre clases es la principal limitación: el modelo
-        detecta peor lo negativo, que es justamente lo que más importa.
+  \item \textbf{La representación importa más que el algoritmo.} Random Forest,
+        el único modelo capaz de captar relaciones no lineales, queda cuatro
+        puntos de ROC-AUC por detrás de una regresión logística. No por ser peor
+        algoritmo, sino porque para poder ejecutarse necesita una compresión que
+        conserva el 8,4\,\% de la varianza y destruye los términos poco
+        frecuentes pero muy discriminantes.
+  \item \textbf{La partición decide la credibilidad de las cifras.} Agrupar por
+        medicamento en lugar de dividir al azar es la decisión metodológica con
+        más impacto de todo el trabajo: produce números más bajos, pero son los
+        únicos que anticipan el comportamiento real del sistema.
+  \item \textbf{Sin un \textit{baseline} trivial, las métricas engañan.}
+        Predecir siempre «positivo» ya da un F1 de 0,8643 con un ROC-AUC de 0,5.
+        Cualquier lectura honesta exige mirar F1-macro y ROC-AUC.
+  \item \textbf{La explicabilidad no es un adorno.} Es lo que permite auditar el
+        modelo. Comprobar que los términos de mayor peso son \textit{worst},
+        \textit{useless} o \textit{stopped taking} —y no artefactos del corpus—
+        es lo que da confianza para usarlo.
 \end{enumerate}
+
+\subsection{Limitaciones}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{El modelo detecta peor lo negativo}, que es lo que más importa:
+        una de cada cinco reseñas desfavorables pasa desapercibida. Se mitiga
+        con el umbral de alerta, pero no se elimina.
+  \item \textbf{No entiende la reserva sin palabras negativas.} La
+        sección~\ref{sec:productivizacion} muestra un caso real: una paciente
+        que se plantea abandonar el tratamiento es clasificada como positiva con
+        un 96,2\,\% de confianza, porque dice que el medicamento «funciona».
+  \item \textbf{El léxico de aspectos detecta menciones, no polaridad.}
+        «\textit{no side effects}» cuenta como mención de efectos secundarios, lo
+        que probablemente explica en parte que ese aspecto no discrimine.
+  \item \textbf{Los datos tienen sesgo de autoselección.} Quien escribe una
+        reseña no es un paciente medio: la distribución bimodal de valoraciones
+        lo confirma. Las conclusiones describen a quien opina, no a toda la
+        población de pacientes.
+\end{itemize}
 
 \subsection{Lecciones aprendidas}
 
@@ -843,6 +927,21 @@ python src/modelado.py\\
 python src/topics\_explicabilidad.py
 }
 \vspace{0.15cm}
+
+\textbf{La aplicación} se levanta con una orden adicional:
+
+\vspace{0.15cm}
+{\small\ttfamily streamlit run src/app.py}
+\vspace{0.15cm}
+
+Se ejecuta en local y no requiere despliegue en ningún servidor. El vídeo que
+acompaña a esta memoria la muestra en funcionamiento, de modo que su
+comportamiento puede verificarse sin necesidad de instalar nada. El modelo
+entrenado se incluye en el repositorio (\texttt{modelos/}), por lo que la
+pestaña de análisis de reseñas funciona nada más clonar; la de perfil del
+medicamento necesita además el conjunto de datos, que debe descargarse de la
+fuente original por las condiciones de licencia descritas en la
+sección~3.1.
 
 Todos los procesos aleatorios emplean la semilla fija
 \texttt{RANDOM\_STATE = 42}: partición, submuestreos, NMF, SVD, Random Forest y
