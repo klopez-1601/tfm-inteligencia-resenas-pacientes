@@ -81,7 +81,16 @@ TFM_DrugReviews/
 - Semilla fija (`RANDOM_STATE = 42`) en todos los procesos aleatorios.
 - Todas las métricas se guardan en `resultados/metricas/` en JSON, de modo que
   las cifras de la memoria proceden siempre de una ejecución real y trazable.
-- `requirements.txt` fija las librerías necesarias.
+- `requirements.txt` fija las librerías necesarias. Los resultados de la memoria
+  se generaron con Python 3.10, pandas 2.3.3, numpy 2.2.6 y scikit-learn 1.7.2;
+  con versiones posteriores el código funciona igual, aunque al cargar el modelo
+  ya entrenado las probabilidades individuales pueden variar unos puntos (la
+  reseña mixta de la app pasa del 90,9 % al 96,2 % entre scikit-learn 1.7.2 y
+  1.9.1). Ninguna clasificación ni conclusión cambia; las métricas globales se
+  reproducen reentrenando con `python src/modelado.py`.
+- `resultados/metricas/ablacion_negaciones.json` recoge el experimento de la
+  sección 5.4 de la memoria (efecto de conservar las negaciones en la lista de
+  palabras vacías), ejecutado sobre la misma partición que el resto de modelos.
 
 ---
 

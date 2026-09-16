@@ -315,7 +315,9 @@ El hallazgo más relevante del análisis exploratorio es que
 \textbf{la distribución de valoraciones es marcadamente bimodal}: las
 puntuaciones de 10 y de 1 concentran los dos mayores volúmenes, mientras que la
 zona intermedia está poco poblada. La valoración media es de \textbf{6,99} y la
-mediana de \textbf{8}, con una desviación típica de 3,28.
+mediana de \textbf{8}, con una desviación típica de 3,28. El Anexo~C amplía
+este análisis con el volumen por condición y medicamento, la longitud de las
+reseñas y la evolución temporal.
 
 Esto no es un defecto del conjunto de datos: es información. Los pacientes
 escriben cuando tienen algo que celebrar o algo que denunciar. Tiene dos
@@ -445,16 +447,17 @@ más allá del caso anecdótico:
 \begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Lista de palabras vacías} & \textbf{F1} & \textbf{F1 macro} & \textbf{ROC-AUC} \\ \midrule
-Estándar (descarta negaciones)     & 0,9094 & 0,8609 & 0,9398 \\
-\textbf{Conservando negaciones}    & \textbf{0,9176} & \textbf{0,8727} & \textbf{0,9481} \\ \bottomrule
+Estándar (descarta negaciones)     & 0,9446 & 0,8900 & 0,9647 \\
+\textbf{Conservando negaciones}    & \textbf{0,9493} & \textbf{0,8992} & \textbf{0,9698} \\ \bottomrule
 \end{tabular}
 \end{table}
 
-La mejora más notable se produce en el \textbf{F1 macro} ($+1,2$ puntos), es
+La mejora más notable se produce en el \textbf{F1 macro} ($+0,9$ puntos), es
 decir, justo en la detección de la clase minoritaria, que era la principal
-debilidad del sistema. Tras el cambio, \textit{«it did work»} obtiene un
-73,1\,\% de probabilidad de ser positiva frente al 0,3\,\% de \textit{«it did
-not work»}.
+debilidad del sistema. Con la lista estándar, \textit{«it did work»} e
+\textit{«it did not work»} reciben ambas un 0,2\,\% de probabilidad de ser
+positivas: son indistinguibles. Tras el cambio, la primera obtiene un
+86,4\,\% y la segunda menos del 0,1\,\%.
 
 \ideaclave{Las opciones por defecto de una librería llevan implícitas
 decisiones de diseño pensadas para otra tarea. La lista de palabras vacías
@@ -484,7 +487,7 @@ de dimensionalidad a 150 componentes mediante Análisis Semántico Latente, que 
 sin mejora apreciable.
 
 Conviene anticipar aquí un dato que resultará decisivo en los resultados: esas
-150 componentes explican únicamente el \textbf{8,3\% de la varianza} original.
+150 componentes explican únicamente el \textbf{8,4\% de la varianza} original.
 La compresión es agresiva y, como se verá, tiene un coste.
 
 % =====================================================================
@@ -534,7 +537,7 @@ intuición de que un modelo más flexible debería rendir mejor.
 La causa no es el algoritmo, sino la representación que se ve obligado a usar.
 Random Forest no puede operar sobre 195.397 columnas dispersas, de modo que
 antes hay que comprimir el texto a 150 componentes mediante SVD, y esa
-compresión \textbf{retiene apenas el 8,3\% de la varianza}. El modelo trabaja,
+compresión \textbf{retiene apenas el 8,4\% de la varianza}. El modelo trabaja,
 por tanto, con una versión muy empobrecida de la información: pierde
 exactamente los términos poco frecuentes pero muy discriminantes
 (\textit{miracle}, \textit{useless}, \textit{ruined}) sobre los que se apoyan
@@ -566,7 +569,8 @@ Positiva & 0,9451 & 0,9632 & 0,9540 & 27.644 \\ \bottomrule
 \textbf{El modelo es notablemente peor detectando reseñas negativas}: recupera
 el 82,2\% de ellas frente al 96,3\% de las positivas. Dicho de otro modo,
 \textbf{el 17,8\,\% de las opiniones desfavorables pasa desapercibido}. El F1
-macro (0,9008) refleja esta realidad mucho mejor que el F1 global.
+macro (0,9008) refleja esta realidad mucho mejor que el F1 global. Las curvas
+ROC y el desglose por clase de todos los modelos están en el Anexo~D.
 
 Esto importa, y mucho, para el caso de uso: en farmacovigilancia el error caro
 es precisamente el falso negativo, la señal de alarma que no se detecta. La
@@ -906,7 +910,7 @@ no es sufrir efectos adversos, sino percibir que el tratamiento funciona.
         el único modelo capaz de captar relaciones no lineales, queda casi seis
         puntos de ROC-AUC por detrás de una regresión logística. No por ser peor
         algoritmo, sino porque para poder ejecutarse necesita una compresión que
-        conserva el 8,3\,\% de la varianza y destruye los términos poco
+        conserva el 8,4\,\% de la varianza y destruye los términos poco
         frecuentes pero muy discriminantes.
   \item \textbf{La partición decide la credibilidad de las cifras.} Agrupar por
         medicamento en lugar de dividir al azar es la decisión metodológica con
@@ -956,7 +960,7 @@ limitación metodológica.
 La tercera, y la más instructiva, fue el asunto de las negaciones. Descubrir
 que el modelo no distinguía \textit{«it did work»} de \textit{«it did not
 work»} obligó a revisar una opción que había aceptado sin cuestionar, por venir
-por defecto en la librería. Corregirla mejoró el F1 macro en 1,2 puntos. La
+por defecto en la librería. Corregirla mejoró el F1 macro en 0,9 puntos. La
 lección: los valores por defecto encierran supuestos, y conviene comprobar si
 esos supuestos encajan con el problema que uno tiene entre manos.
 
@@ -1064,7 +1068,14 @@ Todos los procesos aleatorios emplean la semilla fija
 \texttt{RANDOM\_STATE = 42}: partición, submuestreos, NMF, SVD, Random Forest y
 LIME. Las métricas se escriben en \texttt{resultados/metricas/*.json}, de modo
 que \textbf{cada cifra de esta memoria es trazable hasta una ejecución concreta}
-y puede verificarse volviendo a ejecutar el código.
+y puede verificarse volviendo a ejecutar el código. Esa ejecución se realizó
+con Python 3.10, pandas 2.3.3, numpy 2.2.6 y scikit-learn 1.7.2. Con versiones
+posteriores el código funciona sin cambios, pero al cargar el modelo ya
+entrenado las probabilidades individuales pueden desplazarse unos puntos (la
+reseña mixta de la sección~9.3 obtiene un 90,9\,\% con scikit-learn 1.7.2 y
+un 96,2\,\% con 1.9.1, que es la versión con la que se tomaron las capturas).
+Ninguna clasificación ni conclusión cambia, y las métricas globales se
+reproducen reentrenando el modelo.
 
 % =====================================================================
 \section{Léxico de aspectos}
@@ -1167,7 +1178,8 @@ capacidad de clasificar en general, sino en detectar la señal minoritaria.
 \textbf{Fichero} & \textbf{Contenido} \\ \midrule
 \texttt{eda\_resumen.json}            & Estadísticos descriptivos y contrastes \\
 \texttt{modelado\_resultados.json}    & Métricas de los 5 modelos y coeficientes \\
-\texttt{temas\_y\_explicabilidad.json} & Temas NMF, aspectos y casos LIME \\ \bottomrule
+\texttt{temas\_y\_explicabilidad.json} & Temas NMF, aspectos y casos LIME \\
+\texttt{ablacion\_negaciones.json}    & Efecto de las negaciones (sección~\ref{sec:negaciones}) y varianza SVD \\ \bottomrule
 \end{tabular}
 \end{center}
 

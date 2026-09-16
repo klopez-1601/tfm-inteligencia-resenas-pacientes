@@ -1,0 +1,24 @@
+{
+  "descripcion": "Ablación de la lista de stopwords. Regresión Logística sobre la partición agrupada completa (misma que modelado.py).",
+  "n_train": 158432,
+  "n_test": 36327,
+  "resultados": {
+    "estandar": {
+      "f1": 0.9446,
+      "f1_macro": 0.89,
+      "roc_auc": 0.9647,
+      "vocab": 192396,
+      "p_did_work": 0.0018,
+      "p_did_not_work": 0.0018
+    },
+    "con_negaciones": {
+      "f1": 0.9493,
+      "f1_macro": 0.8992,
+      "roc_auc": 0.9698,
+      "vocab": 195397,
+      "p_did_work": 0.8636,
+      "p_did_not_work": 0.0005
+    }
+  },
+  "svd_150_varianza_explicada": 0.0838
+}

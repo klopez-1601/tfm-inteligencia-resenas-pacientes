@@ -183,7 +183,7 @@ with tab_perfil:
             st.altair_chart(
                 base.mark_bar(color="#4c78a8")
                 + base.mark_text(dy=-8, fontSize=11).encode(text="Reseñas:Q"),
-                use_container_width=True)
+                width="stretch")
 
         # ---- Aspectos ----
         with der:
@@ -200,7 +200,7 @@ with tab_perfil:
                     "Valoración": round(float(sub.loc[menciona, "rating"].mean()), 2),
                 })
             tabla = pd.DataFrame(filas).sort_values("% reseñas", ascending=False)
-            st.dataframe(tabla, hide_index=True, use_container_width=True)
+            st.dataframe(tabla, hide_index=True, width="stretch")
             st.caption("«Valoración» es la media entre quienes mencionan ese "
                        "aspecto. Si es baja, ese aspecto arrastra la "
                        "satisfacción hacia abajo.")
@@ -213,7 +213,7 @@ with tab_perfil:
             st.dataframe(
                 pd.DataFrame({"Condición": cond.index.astype(str),
                               "Reseñas": cond.values}),
-                hide_index=True, use_container_width=True)
+                hide_index=True, width="stretch")
         with der2:
             st.markdown("**Evolución de la valoración media**")
             serie = (sub.set_index("date").sort_index()
@@ -231,7 +231,7 @@ with tab_perfil:
                     base_ev.mark_line(color="#e45756", point=True)
                     + base_ev.mark_text(dy=-12, fontSize=11).encode(
                         text=alt.Text("Valoración:Q", format=".2f")),
-                    use_container_width=True)
+                    width="stretch")
             else:
                 st.caption("Sin histórico suficiente.")
 
@@ -299,7 +299,7 @@ with tab_resena:
                              value=EJEMPLOS[eleccion], height=230,
                              placeholder="Pega aquí la reseña del paciente...")
         analizar = st.button("Analizar reseña", type="primary",
-                             use_container_width=True)
+                             width="stretch")
 
     with col_der:
         st.subheader("Resultado")
@@ -366,7 +366,7 @@ with tab_resena:
                                             alt.value("#27ae60")))
                     + base_p.mark_text(align="left", dx=4, fontSize=10).encode(
                         text=alt.Text("Peso:Q", format="+.3f")),
-                    use_container_width=True)
+                    width="stretch")
             with c2:
                 if len(hacia_neg):
                     st.markdown("**Empujan a negativo**")
