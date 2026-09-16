@@ -347,48 +347,48 @@
       "condicion": "Plaque Psoriasis",
       "rating_real": 9,
       "sentimiento_real": "positivo",
-      "probabilidad_positivo": 0.9712,
+      "probabilidad_positivo": 0.9988,
       "extracto": "Had psoriasis most of my life starting as a teenager. Tried many things before cosentyx inclding Enbrel and Stelara. After 15 long years of nothing working for me Cosentyx has cleared my body by at least 95%. Very easy t...",
       "terminos_decisivos": [
         {
           "termino": "cleared",
-          "peso": 0.0607
-        },
-        {
-          "termino": "Stelara",
-          "peso": -0.0499
-        },
-        {
-          "termino": "life",
-          "peso": 0.0444
-        },
-        {
-          "termino": "years",
-          "peso": 0.0398
+          "peso": 0.0209
         },
         {
           "termino": "easy",
-          "peso": 0.0339
+          "peso": 0.0178
         },
         {
-          "termino": "Enbrel",
-          "peso": 0.032
+          "termino": "nothing",
+          "peso": -0.0136
         },
         {
-          "termino": "body",
-          "peso": -0.0311
-        },
-        {
-          "termino": "psoriasis",
-          "peso": -0.0299
+          "termino": "life",
+          "peso": 0.0132
         },
         {
           "termino": "thankfully",
-          "peso": 0.0232
+          "peso": 0.0114
         },
         {
-          "termino": "working",
-          "peso": 0.0204
+          "termino": "use",
+          "peso": 0.0101
+        },
+        {
+          "termino": "years",
+          "peso": 0.0098
+        },
+        {
+          "termino": "affects",
+          "peso": 0.0096
+        },
+        {
+          "termino": "Stelara",
+          "peso": -0.0073
+        },
+        {
+          "termino": "Cosentyx",
+          "peso": -0.006
         }
       ]
     },
@@ -397,48 +397,48 @@
       "condicion": "ibromyalgia",
       "rating_real": 9,
       "sentimiento_real": "positivo",
-      "probabilidad_positivo": 0.9557,
+      "probabilidad_positivo": 0.9685,
       "extracto": "I have been taking Savella for 5 months now. In addition to that I take Ambien, Xanax and pain pills when needed. Previously I've tried Topamax, Lyrica, Amitriptyline, Clonazepam, Cymbalta, Nortriptyline, Paxil and Zolof...",
       "terminos_decisivos": [
         {
-          "termino": "gone",
-          "peso": 0.1269
-        },
-        {
-          "termino": "needed",
-          "peso": 0.0536
+          "termino": "easier",
+          "peso": 0.0839
         },
         {
           "termino": "little",
-          "peso": 0.0532
+          "peso": 0.0817
         },
         {
-          "termino": "effects",
-          "peso": 0.0505
+          "termino": "not",
+          "peso": -0.0798
         },
         {
-          "termino": "understand",
-          "peso": -0.0388
+          "termino": "gone",
+          "peso": 0.06
         },
         {
-          "termino": "easier",
-          "peso": 0.0385
+          "termino": "energy",
+          "peso": 0.0571
         },
         {
-          "termino": "Savella",
-          "peso": -0.0264
+          "termino": "needed",
+          "peso": 0.0563
         },
         {
-          "termino": "going",
-          "peso": -0.0245
+          "termino": "addition",
+          "peso": -0.0461
         },
         {
-          "termino": "months",
-          "peso": -0.0232
+          "termino": "Zoloft",
+          "peso": 0.0439
         },
         {
-          "termino": "stomach",
-          "peso": -0.0156
+          "termino": "Nortriptyline",
+          "peso": 0.0405
+        },
+        {
+          "termino": "Ambien",
+          "peso": -0.0351
         }
       ]
     },
@@ -447,48 +447,48 @@
       "condicion": "Prevention of Thromboembolism in Atrial Fibrillation",
       "rating_real": 1,
       "sentimiento_real": "negativo",
-      "probabilidad_positivo": 0.0785,
+      "probabilidad_positivo": 0.0438,
       "extracto": "Possibly due to my flu/pneumonia, had an episode of ventrical tachycardia followed by a-fib. Had an implantable cardioverter-defibrillator (ICD). Put on beta blockers and antibiotics in hospital and monitored for several...",
       "terminos_decisivos": [
         {
-          "termino": "face",
-          "peso": -0.0601
-        },
-        {
           "termino": "stop",
-          "peso": -0.0577
+          "peso": -0.0864
         },
         {
-          "termino": "thighs",
-          "peso": -0.0557
+          "termino": "advised",
+          "peso": -0.0656
         },
         {
           "termino": "developed",
-          "peso": -0.0536
-        },
-        {
-          "termino": "taking",
-          "peso": -0.0405
-        },
-        {
-          "termino": "flu",
-          "peso": -0.0399
-        },
-        {
-          "termino": "day",
-          "peso": 0.0362
+          "peso": -0.0545
         },
         {
           "termino": "risk",
-          "peso": -0.0355
+          "peso": -0.0525
         },
         {
-          "termino": "rash",
-          "peso": -0.0336
+          "termino": "debated",
+          "peso": 0.0476
         },
         {
-          "termino": "beta",
-          "peso": 0.0271
+          "termino": "followed",
+          "peso": -0.0457
+        },
+        {
+          "termino": "monitored",
+          "peso": -0.0438
+        },
+        {
+          "termino": "thighs",
+          "peso": -0.0407
+        },
+        {
+          "termino": "thinner",
+          "peso": 0.0378
+        },
+        {
+          "termino": "area",
+          "peso": 0.0237
         }
       ]
     }

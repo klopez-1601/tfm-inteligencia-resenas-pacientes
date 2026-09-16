@@ -41,7 +41,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.decomposition import TruncatedSVD
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -61,6 +61,7 @@ from sklearn.svm import LinearSVC
 from config import (
     DIR_MODELOS,
     RANDOM_STATE,
+    etiquetar_barras,
     anadir_sentimiento,
     cargar_datos,
     guardar_figura,
@@ -92,14 +93,23 @@ def particion_por_grupo(df: pd.DataFrame, test_size: float = 0.2):
 # --------------------------------------------------------------------------
 # Definición de modelos
 # --------------------------------------------------------------------------
+# La lista de stopwords de scikit-learn descarta las nueve negaciones del
+# inglés ("not", "no", "never"...). En análisis de sentimiento eso destruye
+# información esencial: sin "not", las frases "it did work" y "it did not work"
+# se convierten en exactamente los mismos rasgos. Se conservan explícitamente.
+NEGACIONES = {"not", "no", "never", "nor", "none", "cannot",
+              "nothing", "nowhere", "neither", "without"}
+STOP_WORDS = sorted(ENGLISH_STOP_WORDS - NEGACIONES)
+
+
 def construir_vectorizador() -> TfidfVectorizer:
     return TfidfVectorizer(
         sublinear_tf=True,      # amortigua el efecto de palabras muy repetidas
         min_df=5,               # descarta ruido y erratas irrepetibles
         max_df=0.9,             # descarta términos omnipresentes
-        ngram_range=(1, 2),     # unigramas + bigramas ("no ayudó", "efectos secundarios")
+        ngram_range=(1, 2),     # unigramas + bigramas ("not work", "weight gain")
         strip_accents="unicode",
-        stop_words="english",
+        stop_words=STOP_WORDS,  # inglés estándar MENOS las negaciones
         max_features=200_000,
     )
 
@@ -212,6 +222,7 @@ def fig_comparativa(resultados: list[dict]) -> None:
     ax.set_xlabel("Puntuación")
     ax.set_title("Comparativa de modelos sobre el conjunto de test")
     ax.set_xlim(0, 1)
+    etiquetar_barras(ax, horizontal=True, formato="{:.3f}", tam=6)
     ax.legend(loc="lower right")
     fig.tight_layout()
     guardar_figura(fig, "06_comparativa_modelos")
@@ -311,6 +322,7 @@ def fig_terminos(terminos: dict) -> None:
     axes[1].set_title("Términos que empujan hacia POSITIVO")
     for a in axes:
         a.set_xlabel("Peso del coeficiente")
+        etiquetar_barras(a, horizontal=True, formato="{:.2f}", tam=7)
     fig.tight_layout()
     guardar_figura(fig, "09_terminos_influyentes")
     plt.close(fig)

@@ -21,6 +21,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import altair as alt
 import joblib
 import numpy as np
 import pandas as pd
@@ -172,8 +173,17 @@ with tab_perfil:
         with izq:
             st.markdown("**Distribución de valoraciones**")
             dist = (sub["rating"].value_counts()
-                    .reindex(range(1, 11), fill_value=0).sort_index())
-            st.bar_chart(dist, color="#4c78a8")
+                    .reindex(range(1, 11), fill_value=0).sort_index()
+                    .rename_axis("Valoración").reset_index(name="Reseñas"))
+            # Se usa Altair en lugar de st.bar_chart porque este último no
+            # permite escribir el valor encima de cada barra.
+            base = alt.Chart(dist).encode(
+                x=alt.X("Valoración:O", title="Valoración (1-10)"),
+                y=alt.Y("Reseñas:Q", title="Nº de reseñas"))
+            st.altair_chart(
+                base.mark_bar(color="#4c78a8")
+                + base.mark_text(dy=-8, fontSize=11).encode(text="Reseñas:Q"),
+                use_container_width=True)
 
         # ---- Aspectos ----
         with der:
@@ -209,8 +219,19 @@ with tab_perfil:
             serie = (sub.set_index("date").sort_index()
                         .resample("YE")["rating"].mean().dropna())
             if len(serie) > 1:
-                serie.index = serie.index.year
-                st.line_chart(serie, color="#e45756")
+                ev = pd.DataFrame({"Año": serie.index.year.astype(str),
+                                   "Valoración": serie.values.round(2)})
+                # Altair en lugar de st.line_chart: permite rotular cada punto
+                # con su valor y mostrar los ejes en español.
+                base_ev = alt.Chart(ev).encode(
+                    x=alt.X("Año:O", title="Año"),
+                    y=alt.Y("Valoración:Q", title="Valoración media",
+                            scale=alt.Scale(zero=False, padding=18)))
+                st.altair_chart(
+                    base_ev.mark_line(color="#e45756", point=True)
+                    + base_ev.mark_text(dy=-12, fontSize=11).encode(
+                        text=alt.Text("Valoración:Q", format=".2f")),
+                    use_container_width=True)
             else:
                 st.caption("Sin histórico suficiente.")
 
@@ -332,7 +353,20 @@ with tab_resena:
 
             c1, c2 = st.columns([2, 1])
             with c1:
-                st.bar_chart(df_pesos.set_index("Término")["Peso"], horizontal=True)
+                # Altair en lugar de st.bar_chart: rotula cada barra con su
+                # peso y colorea según el sentido en que empuja la predicción.
+                base_p = alt.Chart(df_pesos).encode(
+                    y=alt.Y("Término:N", sort="x", title=None),
+                    x=alt.X("Peso:Q", title="Peso asignado por LIME",
+                            scale=alt.Scale(padding=24)))
+                st.altair_chart(
+                    base_p.mark_bar().encode(
+                        color=alt.condition(alt.datum.Peso < 0,
+                                            alt.value("#c0392b"),
+                                            alt.value("#27ae60")))
+                    + base_p.mark_text(align="left", dx=4, fontSize=10).encode(
+                        text=alt.Text("Peso:Q", format="+.3f")),
+                    use_container_width=True)
             with c2:
                 if len(hacia_neg):
                     st.markdown("**Empujan a negativo**")

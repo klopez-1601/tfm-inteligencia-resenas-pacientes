@@ -31,6 +31,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from config import (
     DIR_MODELOS,
     RANDOM_STATE,
+    etiquetar_barras,
     anadir_sentimiento,
     cargar_datos,
     guardar_figura,
@@ -106,6 +107,7 @@ def fig_temas(temas: dict, W: np.ndarray, y: pd.Series) -> pd.DataFrame:
     ax.set_yticklabels([f"{i}\n{p[:45]}" for i, p in zip(orden.index, orden["palabras"])],
                        fontsize=8)
     ax.axvline(50, color="grey", linestyle="--")
+    etiquetar_barras(ax, horizontal=True, formato="{:.1f}%", tam=7)
     ax.set_xlabel("% de reseñas positivas en el tema")
     ax.set_title("Temas descubiertos y su polaridad")
     fig.tight_layout()
@@ -147,17 +149,22 @@ def fig_aspectos(tabla: pd.DataFrame, media_global: float) -> None:
     axes[0].barh(tabla["aspecto"], tabla["pct_resenas"], color=sns.color_palette("deep")[0])
     axes[0].set_xlabel("% de reseñas que lo mencionan")
     axes[0].set_title("Frecuencia de cada aspecto")
+    etiquetar_barras(axes[0], horizontal=True, formato="{:.1f}%", tam=8)
 
     x = np.arange(len(tabla))
     alturas = tabla["rating_medio_si_menciona"].fillna(0)
     axes[1].barh(x, alturas, color=sns.color_palette("deep")[3])
     axes[1].set_yticks(x)
     axes[1].set_yticklabels(tabla["aspecto"])
+    # La referencia es la media del subconjunto etiquetado (el que se analiza
+    # aquí), no la del corpus completo: son 7,14 frente a 6,99, y confundirlas
+    # llevaría a comparar contra una base distinta.
     axes[1].axvline(media_global, color="grey", linestyle="--",
-                    label=f"Media global = {media_global:.2f}")
+                    label=f"Media del conjunto etiquetado = {media_global:.2f}")
     axes[1].set_xlabel("Valoración media cuando se menciona")
     axes[1].set_title("Impacto del aspecto en la satisfacción")
-    axes[1].legend()
+    etiquetar_barras(axes[1], horizontal=True, formato="{:.2f}", tam=8)
+    axes[1].legend(loc="lower right", fontsize=8)
 
     fig.tight_layout()
     guardar_figura(fig, "11_aspectos")

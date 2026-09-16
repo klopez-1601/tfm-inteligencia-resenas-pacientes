@@ -22,6 +22,7 @@ from config import (
     RANDOM_STATE,
     anadir_sentimiento,
     cargar_datos,
+    etiquetar_barras,
     guardar_figura,
     guardar_metricas,
 )
@@ -68,6 +69,7 @@ def fig_distribucion_ratings(df: pd.DataFrame) -> None:
     axes[0].set_xlabel("Valoración")
     axes[0].set_ylabel("Nº de reseñas")
     axes[0].set_xticks(range(1, 11))
+    etiquetar_barras(axes[0])
 
     df_s = anadir_sentimiento(df)
     reparto = df_s["sentimiento"].value_counts()
@@ -75,6 +77,7 @@ def fig_distribucion_ratings(df: pd.DataFrame) -> None:
                 color=[sns.color_palette("deep")[2], sns.color_palette("deep")[3]])
     axes[1].set_title("Reparto por sentimiento (excluida la banda neutra 5-6)")
     axes[1].set_ylabel("Nº de reseñas")
+    etiquetar_barras(axes[1])
 
     fig.tight_layout()
     guardar_figura(fig, "01_distribucion_ratings")
@@ -88,11 +91,13 @@ def fig_top_condiciones_farmacos(df: pd.DataFrame, top: int = 15) -> None:
         kind="barh", ax=axes[0], color=sns.color_palette("deep")[0])
     axes[0].set_title(f"Top {top} condiciones por volumen de reseñas")
     axes[0].set_xlabel("Nº de reseñas")
+    etiquetar_barras(axes[0], horizontal=True, tam=7)
 
     df["drugName"].value_counts().head(top).sort_values().plot(
         kind="barh", ax=axes[1], color=sns.color_palette("deep")[1])
     axes[1].set_title(f"Top {top} fármacos por volumen de reseñas")
     axes[1].set_xlabel("Nº de reseñas")
+    etiquetar_barras(axes[1], horizontal=True, tam=7)
 
     fig.tight_layout()
     guardar_figura(fig, "02_top_condiciones_farmacos")
@@ -119,7 +124,8 @@ def fig_satisfaccion_por_condicion(df: pd.DataFrame, min_reseñas: int = 500) ->
     ax.set_title(f"Condiciones con menor y mayor satisfacción (≥{min_reseñas} reseñas)")
     ax.axvline(df["rating"].mean(), color="grey", linestyle="--",
                label=f"Media global = {df['rating'].mean():.2f}")
-    ax.legend()
+    etiquetar_barras(ax, horizontal=True, formato="{:.2f}", tam=7)
+    ax.legend(loc="lower right")
 
     fig.tight_layout()
     guardar_figura(fig, "03_satisfaccion_por_condicion")

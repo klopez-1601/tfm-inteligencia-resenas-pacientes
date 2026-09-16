@@ -157,3 +157,41 @@ def guardar_figura(fig, nombre: str) -> Path:
     fig.savefig(ruta, dpi=200, bbox_inches="tight")
     print(f"  -> figura guardada en {ruta.relative_to(RAIZ)}")
     return ruta
+
+
+def etiquetar_barras(ax, horizontal: bool = False, formato: str = "{:,.0f}",
+                     tam: int = 8, margen: float = 0.01) -> None:
+    """
+    Escribe el valor de cada barra sobre la propia barra.
+
+    Un gráfico de barras sin cifras obliga al lector a estimar la altura contra
+    el eje. Anotarlas evita esa lectura aproximada, algo especialmente útil en
+    un documento dirigido también a perfiles no técnicos.
+
+    horizontal : True si las barras son horizontales (barh).
+    formato    : plantilla de formato; por defecto separador de miles.
+    """
+    if horizontal:
+        limite = ax.get_xlim()[1]
+        desplazamiento = limite * margen
+        for barra in ax.patches:
+            valor = barra.get_width()
+            if valor == 0:
+                continue
+            ax.text(valor + desplazamiento,
+                    barra.get_y() + barra.get_height() / 2,
+                    formato.format(valor).replace(",", "."),
+                    va="center", ha="left", fontsize=tam)
+        ax.set_xlim(right=limite * 1.12)
+    else:
+        limite = ax.get_ylim()[1]
+        desplazamiento = limite * margen
+        for barra in ax.patches:
+            valor = barra.get_height()
+            if valor == 0:
+                continue
+            ax.text(barra.get_x() + barra.get_width() / 2,
+                    valor + desplazamiento,
+                    formato.format(valor).replace(",", "."),
+                    ha="center", va="bottom", fontsize=tam)
+        ax.set_ylim(top=limite * 1.10)

@@ -66,8 +66,10 @@
 % Recuadro para los mensajes dirigidos a negocio. En tono neutro, para
 % mantener la coherencia con el resto del documento.
 \newcommand{\ideaclave}[1]{%
-  \begin{center}\fcolorbox{black!45}{black!4}{%
-  \parbox{0.94\textwidth}{\small\textbf{Idea clave.} #1}}\end{center}}
+  \begin{center}%
+  \setlength{\fboxsep}{9pt}%
+  \fcolorbox{black!45}{black!4}{%
+  \parbox{0.92\textwidth}{\small #1}}\end{center}}
 
 \newcommand{\autortfm}{Keyla Lisbeth López Chamorro}
 
@@ -154,8 +156,8 @@ que clasifica automáticamente el sentimiento de una reseña, descubre de qué
 hablan los pacientes y explica en qué se ha basado cada decisión.
 
 \textbf{Qué se ha conseguido.} El modelo seleccionado —una máquina de vectores
-de soporte lineal sobre TF-IDF— alcanza un \textbf{F1 de 0,9494} y un
-\textbf{ROC-AUC de 0,9649}. Esa cifra no procede de una evaluación cómoda: el
+de soporte lineal sobre TF-IDF— alcanza un \textbf{F1 de 0,9540} y un
+\textbf{ROC-AUC de 0,9701}. Esa cifra no procede de una evaluación cómoda: el
 conjunto de prueba contiene \textbf{721 medicamentos que el modelo nunca vio
 durante el entrenamiento}, porque una división aleatoria le habría permitido
 memorizar el vocabulario de cada fármaco y habría producido una nota
@@ -175,14 +177,14 @@ ha empaquetado en una aplicación que recibe una reseña nueva y devuelve, en
 segundos, la predicción con su probabilidad, los aspectos detectados y las
 palabras concretas que han inclinado la decisión.
 
-\textbf{Qué no resuelve.} El sistema detecta el 96,1\,\% de las opiniones
-favorables pero solo el 79,7\,\% de las desfavorables, que son justamente las
+\textbf{Qué no resuelve.} El sistema detecta el 96,3\,\% de las opiniones
+favorables pero solo el 82,2\,\% de las desfavorables, que son justamente las
 que importan. Por eso se plantea como un \textbf{filtro de priorización} —que
 ordena por urgencia un volumen inabarcable— y no como un sustituto del criterio
 humano.
 
 \ideaclave{Sobre las 36.327 reseñas del conjunto de prueba, el sistema localiza
-correctamente 6.922 opiniones desfavorables y explica por qué lo son. Revisar
+correctamente 7.135 opiniones desfavorables y explica por qué lo son. Revisar
 ese mismo volumen a mano, a dos minutos por reseña, exigiría más de 1.200 horas
 de trabajo.}
 
@@ -372,7 +374,8 @@ Esta decisión tiene un coste que conviene explicitar: se apartan
 representan opiniones inequívocas y la etiqueta resultante es fiable. El
 conjunto etiquetado queda en \textbf{194.759 reseñas}, con un
 \textbf{72,7\% de positivas}: un desbalanceo moderado que obliga a no evaluar
-por \textit{accuracy} y a usar \texttt{class\_weight="balanced"}.
+por \textit{accuracy} y a compensar el peso de cada clase durante el
+entrenamiento.
 
 \subsection{Partición: por qué una división aleatoria engaña}\label{sec:particion}
 
@@ -381,8 +384,8 @@ entrenamiento y en test. El modelo aprendería el vocabulario característico de
 ese fármaco —los efectos concretos que produce, cómo lo nombran los pacientes—
 y obtendría en test una nota que no reflejaría su capacidad real.
 
-Se ha empleado por ello una \textbf{partición agrupada por medicamento}
-(\texttt{GroupShuffleSplit}, 80/20). El resultado: 158.432 reseñas de
+Se ha empleado por ello una \textbf{partición agrupada por medicamento},
+con un reparto 80/20. El resultado: 158.432 reseñas de
 entrenamiento y 36.327 de test, con \textbf{721 medicamentos que aparecen
 únicamente en test}.
 
@@ -393,21 +396,70 @@ real del sistema cuando llegue al mercado un fármaco nuevo.}
 \subsection{Representación del texto}
 
 Se emplea \textbf{TF-IDF} con unigramas y bigramas, produciendo una matriz de
-$158.432 \times 192.396$. Las decisiones relevantes:
+$158.432 \times 195.397$. Las decisiones relevantes:
 
 \begin{itemize}[nosep,leftmargin=*]
-  \item \texttt{ngram\_range=(1,2)}: los bigramas capturan negaciones y
-        expresiones compuestas (\textit{"stopped taking"}, \textit{"weight gain"})
-        que un unigrama pierde. Su peso en el modelo final lo confirma.
-  \item \texttt{min\_df=5} y \texttt{max\_df=0.9}: descartan erratas
-        irrepetibles y términos omnipresentes sin capacidad discriminante.
-  \item \texttt{sublinear\_tf=True}: amortigua el efecto de repetir una palabra
-        muchas veces dentro de una misma reseña.
+  \item \textbf{Parejas de palabras además de palabras sueltas.} Los bigramas
+        capturan negaciones y expresiones compuestas (\textit{"stopped taking"},
+        \textit{"weight gain"}) que una palabra aislada pierde. Su peso en el
+        modelo final lo confirma.
+  \item \textbf{Descarte de los extremos del vocabulario.} Se eliminan los
+        términos que aparecen en menos de cinco reseñas —erratas irrepetibles—
+        y los presentes en más del 90\,\% del corpus, que no discriminan nada.
+  \item \textbf{Amortiguación de las repeticiones.} Que una palabra aparezca
+        diez veces en una reseña no la hace diez veces más relevante, y la
+        ponderación lo tiene en cuenta.
 \end{itemize}
+
+Los valores exactos de cada parámetro están en el código (Anexo~A).
 
 El vectorizador se ajusta \textbf{únicamente sobre el conjunto de
 entrenamiento} y se reutiliza para todos los modelos. Nunca ve el test, por lo
 que no existe fuga de información.
+
+\subsection{Las negaciones: un detalle que no lo era}\label{sec:negaciones}
+
+La configuración inicial empleaba la lista de palabras vacías
+(\textit{stop words}) estándar de \textit{scikit-learn}, que es lo habitual en
+clasificación de texto. Al inspeccionar el comportamiento del modelo apareció
+un problema serio: las frases \textit{«it did work»} e \textit{«it did not
+work»} —de sentido opuesto— recibían \textbf{exactamente la misma predicción}.
+
+La causa es que esa lista contiene las nueve negaciones del inglés
+(\textit{not}, \textit{no}, \textit{never}, \textit{nor}, \textit{none},
+\textit{cannot}, \textit{nothing}, \textit{nowhere}, \textit{neither}). Al
+descartarlas, ambas frases se reducen a los mismos rasgos y se vuelven
+indistinguibles.
+
+El criterio es razonable en tareas de clasificación temática, donde las
+negaciones aportan poco. En \textbf{análisis de sentimiento es exactamente al
+revés}: la negación es con frecuencia lo único que separa una opinión
+favorable de una desfavorable.
+
+Se redefinió por ello la lista conservando las negaciones. El efecto va mucho
+más allá del caso anecdótico:
+
+\begin{table}[htbp]\centering\small
+\caption{Efecto de conservar las negaciones (Regresión Logística, misma
+         partición agrupada por medicamento).}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Lista de palabras vacías} & \textbf{F1} & \textbf{F1 macro} & \textbf{ROC-AUC} \\ \midrule
+Estándar (descarta negaciones)     & 0,9094 & 0,8609 & 0,9398 \\
+\textbf{Conservando negaciones}    & \textbf{0,9176} & \textbf{0,8727} & \textbf{0,9481} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+La mejora más notable se produce en el \textbf{F1 macro} ($+1,2$ puntos), es
+decir, justo en la detección de la clase minoritaria, que era la principal
+debilidad del sistema. Tras el cambio, \textit{«it did work»} obtiene un
+73,1\,\% de probabilidad de ser positiva frente al 0,3\,\% de \textit{«it did
+not work»}.
+
+\ideaclave{Las opciones por defecto de una librería llevan implícitas
+decisiones de diseño pensadas para otra tarea. La lista de palabras vacías
+estándar está pensada para clasificación temática; aplicarla sin revisarla a un
+problema de sentimiento destruye precisamente la información que más importa.}
 
 \subsection{Modelos evaluados}
 
@@ -424,16 +476,15 @@ Random Forest (sobre LSA) & Capta interacciones no lineales & Exige reducir dime
 \end{tabular}
 \end{table}
 
-Random Forest merece una nota. Aplicarlo directamente sobre 192.396 columnas
+Random Forest merece una nota. Aplicarlo directamente sobre 195.397 columnas
 dispersas resulta inviable en tiempo y rinde mal. Se le antepone una reducción
-de dimensionalidad mediante \texttt{TruncatedSVD} a 150 componentes —Análisis
-Semántico Latente—, que es la práctica habitual para combinar modelos de
+de dimensionalidad a 150 componentes mediante Análisis Semántico Latente, que es la práctica habitual para combinar modelos de
 árboles con representaciones de texto. Se limita además la profundidad de los
 árboles a 14 niveles: sin ese límite el entrenamiento supera los cinco minutos
 sin mejora apreciable.
 
 Conviene anticipar aquí un dato que resultará decisivo en los resultados: esas
-150 componentes explican únicamente el \textbf{8,4\% de la varianza} original.
+150 componentes explican únicamente el \textbf{8,3\% de la varianza} original.
 La compresión es agresiva y, como se verá, tiene un coste.
 
 % =====================================================================
@@ -447,10 +498,10 @@ La compresión es agresiva y, como se verá, tiene un coste.
 \toprule
 \textbf{Modelo} & \textbf{Accuracy} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1} & \textbf{F1 macro} & \textbf{ROC-AUC} \\ \midrule
 Baseline (clase mayoritaria) & 0,7610 & 0,7610 & 1,0000 & 0,8643 & 0,4321 & 0,5000 \\
-Random Forest (sobre LSA)    & 0,8578 & 0,9227 & 0,8876 & 0,9048 & 0,8122 & 0,9092 \\
-Naive Bayes (Complement)     & 0,8594 & 0,9358 & 0,8753 & 0,9045 & 0,8189 & 0,9235 \\
-Regresión Logística          & 0,9171 & 0,9608 & 0,9291 & 0,9446 & \textbf{0,8900} & 0,9647 \\
-\textbf{SVM lineal}          & \textbf{0,9221} & 0,9379 & \textbf{0,9613} & \textbf{0,9494} & 0,8898 & \textbf{0,9649} \\ \bottomrule
+Random Forest (sobre LSA)    & 0,8602 & 0,9251 & 0,8883 & 0,9063 & 0,8156 & 0,9121 \\
+Naive Bayes (Complement)     & 0,8687 & 0,9401 & 0,8837 & 0,9111 & 0,8302 & 0,9314 \\
+Regresión Logística          & 0,9241 & 0,9654 & 0,9337 & 0,9493 & 0,8992 & 0,9698 \\
+\textbf{SVM lineal}          & \textbf{0,9294} & 0,9451 & \textbf{0,9632} & \textbf{0,9540} & \textbf{0,9008} & \textbf{0,9701} \\ \bottomrule
 \end{tabular}
 \end{table}
 
@@ -464,26 +515,26 @@ siempre "positivo" alcanza un F1 de 0,8643, una cifra aparentemente buena que
 corresponde a un modelo sin ningún valor: su ROC-AUC es 0,5, el del azar. Toda
 comparación honesta debe apoyarse en ROC-AUC y F1-macro.
 
-La \textbf{SVM lineal} obtiene el mejor F1 (0,9494) y ROC-AUC (0,9649). La
-Regresión Logística queda muy cerca (0,9446 y 0,9647) con una diferencia
+La \textbf{SVM lineal} obtiene el mejor F1 (0,9540) y ROC-AUC (0,9701). La
+Regresión Logística queda muy cerca (0,9493 y 0,9698) con una diferencia
 prácticamente irrelevante en la práctica, lo que resulta útil: si se
 priorizase la interpretabilidad directa, cambiar a Regresión Logística costaría
 menos de medio punto de F1.
 
 La validación cruzada de 5 particiones sobre el entrenamiento confirma la
-estabilidad: $F1 = 0{,}9358 \pm 0{,}0006$.
+estabilidad: $F1 = 0{,}9423 \pm 0{,}0007$.
 
 \subsection{El modelo no lineal no aporta: por qué}
 
-\textbf{Random Forest queda claramente por detrás} (F1 de 0,9048 y ROC-AUC de
-0,9092), al nivel del Naive Bayes y a más de cuatro puntos de ROC-AUC de los
+\textbf{Random Forest queda claramente por detrás} (F1 de 0,9063 y ROC-AUC de
+0,9121), al nivel del Naive Bayes y a casi seis puntos de ROC-AUC de los
 modelos lineales. El resultado merece explicación, porque contradice la
 intuición de que un modelo más flexible debería rendir mejor.
 
 La causa no es el algoritmo, sino la representación que se ve obligado a usar.
-Random Forest no puede operar sobre 192.396 columnas dispersas, de modo que
+Random Forest no puede operar sobre 195.397 columnas dispersas, de modo que
 antes hay que comprimir el texto a 150 componentes mediante SVD, y esa
-compresión \textbf{retiene apenas el 8,4\% de la varianza}. El modelo trabaja,
+compresión \textbf{retiene apenas el 8,3\% de la varianza}. El modelo trabaja,
 por tanto, con una versión muy empobrecida de la información: pierde
 exactamente los términos poco frecuentes pero muy discriminantes
 (\textit{miracle}, \textit{useless}, \textit{ruined}) sobre los que se apoyan
@@ -495,7 +546,7 @@ directamente sobre una representación dispersa de alta dimensión. La
 flexibilidad del algoritmo no compensa la información destruida al comprimir.}
 
 Su peor comportamiento se concentra además en la clase minoritaria: la
-precisión sobre reseñas negativas cae a 0,6807, frente al 0,8661 de la SVM.
+precisión sobre reseñas negativas cae a 0,6842, frente al 0,8752 de la SVM.
 Dicho de otro modo, una de cada tres alertas que generaría sería falsa.
 
 \subsection{Dónde se equivoca el modelo}\label{sec:errores}
@@ -507,15 +558,15 @@ Las métricas agregadas esconden un desequilibrio importante entre clases:
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Clase} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1} & \textbf{Casos} \\ \midrule
-Negativa & 0,8661 & 0,7972 & 0,8302 & 8.683 \\
-Positiva & 0,9379 & 0,9613 & 0,9494 & 27.644 \\ \bottomrule
+Negativa & 0,8752 & 0,8217 & 0,8476 & 8.683 \\
+Positiva & 0,9451 & 0,9632 & 0,9540 & 27.644 \\ \bottomrule
 \end{tabular}
 \end{table}
 
 \textbf{El modelo es notablemente peor detectando reseñas negativas}: recupera
-el 79,7\% de ellas frente al 96,1\% de las positivas. Dicho de otro modo,
-\textbf{una de cada cinco opiniones desfavorables pasa desapercibida}. El F1
-macro (0,8898) refleja esta realidad mucho mejor que el F1 global.
+el 82,2\% de ellas frente al 96,3\% de las positivas. Dicho de otro modo,
+\textbf{el 17,8\,\% de las opiniones desfavorables pasa desapercibido}. El F1
+macro (0,9008) refleja esta realidad mucho mejor que el F1 global.
 
 Esto importa, y mucho, para el caso de uso: en farmacovigilancia el error caro
 es precisamente el falso negativo, la señal de alarma que no se detecta. La
@@ -537,23 +588,27 @@ es equivalente. Los términos aprendidos son un buen indicio de que el modelo
 capta señal real y no artefactos:
 
 \begin{itemize}[nosep,leftmargin=*]
-  \item \textbf{Hacia negativo:} \textit{worse}, \textit{disappointed},
-        \textit{worst}, \textit{don't recommend}, \textit{gained},
-        \textit{useless}, \textit{horrible}, \textit{stopped taking},
-        \textit{ruined}.
+  \item \textbf{Hacia negativo:} \textit{not recommend}, \textit{not worth},
+        \textit{worse}, \textit{don't recommend}, \textit{disappointed},
+        \textit{no improvement}, \textit{wouldn't recommend}, \textit{worst},
+        \textit{does nothing}, \textit{no relief}.
   \item \textbf{Hacia positivo:} \textit{love}, \textit{amazing},
-        \textit{miracle}, \textit{changed life}, \textit{saved},
-        \textit{great}, \textit{works}, \textit{best}, \textit{excellent}.
+        \textit{miracle}, \textit{works}, \textit{saved}, \textit{changed life},
+        \textit{great}, \textit{best}, \textit{no effects}.
 \end{itemize}
 
-Obsérvese que varios de los términos más informativos son \textbf{bigramas}
-(\textit{"stopped taking"}, \textit{"changed life"}, \textit{"don't recommend"}),
-lo que valida la decisión de incluirlos en la representación.
+Dos observaciones. La primera, que la mayoría de los términos más informativos
+son \textbf{bigramas}, lo que valida la decisión de incluirlos. La segunda, más
+relevante: \textbf{seis de los diez rasgos más negativos contienen una
+negación} (\textit{not recommend}, \textit{no improvement}, \textit{no relief}),
+y entre los positivos aparece \textit{no effects} —de «no side effects»—. Esto
+confirma que conservar las negaciones (sección~\ref{sec:negaciones}) no fue un
+ajuste menor: las negaciones son la señal más discriminante del corpus.
 
 \subsection{Explicación de un caso concreto}
 
 Sobre una reseña real de \textbf{Apixaban} con valoración 1, el modelo asigna
-una probabilidad de sentimiento positivo de \textbf{0,079}, es decir, la
+una probabilidad de sentimiento positivo de \textbf{0,044}, es decir, la
 clasifica correctamente como negativa con alta confianza. Los términos que más
 pesan en esa decisión son \textit{stop}, \textit{developed}, \textit{taking} y
 \textit{flu}, coherentes con un relato de abandono del tratamiento por efectos
@@ -651,8 +706,8 @@ responden a dos preguntas distintas del día a día de un analista:
 
 \subsection{Arquitectura}
 
-La solución se serializa como un \textit{pipeline} único
-(\texttt{joblib}, 6,6~MB) que encapsula el vectorizador y el clasificador. Esto
+La solución se serializa como un \textit{pipeline} único que encapsula el
+vectorizador y el clasificador. Esto
 garantiza que el texto recibido en producción atraviese exactamente las mismas
 transformaciones que durante el entrenamiento, eliminando la principal fuente
 de errores en el despliegue de modelos de NLP.
@@ -716,10 +771,18 @@ decisión.
   \includegraphics[width=\textwidth]{img/app_desfavorable}
   \caption{Reseña desfavorable. El modelo asigna una probabilidad de sentimiento
            positivo del 0,0\,\%, dispara la alerta por situarse bajo el umbral
-           del 35\,\% y señala los términos decisivos: \textit{worst}
-           ($-0{,}060$), \textit{severe} ($-0{,}049$) y \textit{unbearable}
-           ($-0{,}041$).}
+           del 35\,\% y detecta el aspecto de efectos secundarios.}
   \label{fig:app_neg}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_desfavorable_lime}
+  \caption{Explicación de la reseña desfavorable. Los términos decisivos son
+           \textit{worst} ($-0{,}063$), \textit{severe} ($-0{,}062$) y
+           \textit{unbearable} ($-0{,}059$). Los pesos positivos corresponden a
+           palabras vacías (\textit{the}, \textit{and}, \textit{out}) y son un
+           orden de magnitud menores.}
+  \label{fig:app_neg_lime}
 \end{figure}
 
 \begin{figure}[htbp]\centering
@@ -728,6 +791,17 @@ decisión.
            identifica tres aspectos distintos —eficacia, efectos secundarios y
            posología— en un mismo texto.}
   \label{fig:app_pos}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_favorable_lime}
+  \caption{Explicación de la reseña favorable. \textit{works} y \textit{finally}
+           aportan $+0{,}140$ cada uno. Conviene fijarse en el lado contrario:
+           \textit{pain} ($-0{,}038$) y \textit{relief} ($-0{,}035$) empujan
+           hacia negativo pese a aparecer aquí en una frase de mejoría. El
+           modelo asocia el vocabulario del dolor con la queja, no con su
+           alivio.}
+  \label{fig:app_pos_lime}
 \end{figure}
 
 La aplicación incorpora un \textbf{umbral de alerta configurable}
@@ -747,16 +821,26 @@ sobrellevar y se plantea abandonar el tratamiento.
 \begin{figure}[htbp]\centering
   \includegraphics[width=\textwidth]{img/app_caso_dificil}
   \caption{Reseña mixta. El modelo la clasifica como positiva con un 96,2\,\%
-           de confianza pese a que la paciente se plantea abandonar: el peso de
-           \textit{works} (+0,181) domina sobre los términos de duda.}
+           de confianza pese a que la paciente se plantea abandonar el
+           tratamiento.}
   \label{fig:app_mixta}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\textwidth]{img/app_caso_dificil_lime}
+  \caption{Explicación de la reseña mixta. El peso de \textit{works}
+           ($+0{,}185$) domina sobre todos los términos de duda juntos. Nótese
+           además que \textit{pros} se contabiliza como señal negativa y
+           \textit{cons} como positiva: LIME mide asociaciones estadísticas del
+           corpus, no el significado de las palabras.}
+  \label{fig:app_mixta_lime}
 \end{figure}
 
 El modelo la clasifica como positiva con un 96,2\,\% de confianza. La
 explicación revela por qué: el término \textit{works} aporta un peso de
-$+0{,}181$, casi el triple que el mayor de los términos que expresan duda
-(\textit{pros}, $-0{,}070$; \textit{sure}, $-0{,}065$; \textit{continue},
-$-0{,}060$). El sistema detecta el vocabulario de eficacia, pero no la reserva
+$+0{,}185$, más del doble que el mayor de los términos que expresan duda
+(\textit{sure}, $-0{,}070$; \textit{continue}, $-0{,}050$; \textit{pros},
+$-0{,}048$). El sistema detecta el vocabulario de eficacia, pero no la reserva
 que lo acompaña.
 
 \ideaclave{Este caso concreta la limitación cuantificada en la
@@ -770,7 +854,7 @@ siempre a un revisor humano en el proceso.}
 % =====================================================================
 
 \textbf{Volumen procesable.} Sobre las 36.327 reseñas de test, el sistema
-identifica correctamente 6.922 de las 8.683 opiniones negativas. Una revisión
+identifica correctamente 7.135 de las 8.683 opiniones negativas. Una revisión
 manual equivalente, a un ritmo conservador de dos minutos por reseña,
 supondría más de 1.200 horas de trabajo.
 
@@ -779,14 +863,14 @@ vigilancia: rastrear menciones de efectos secundarios es ineficiente porque
 aparecen en el 63,5\% de las reseñas sin correlación con la insatisfacción. La
 señal útil está en la percepción de eficacia.
 
-\textbf{El coste del error.} Con la configuración por defecto, una de cada
-cinco reseñas negativas pasa desapercibida. El sistema debe entenderse como un
+\textbf{El coste del error.} Con la configuración por defecto, el 17,8\,\% de
+las reseñas negativas pasa desapercibido. El sistema debe entenderse como un
 \textbf{filtro de priorización}, no como un sustituto del criterio humano: su
 valor está en ordenar por urgencia un volumen inabarcable, no en decidir por sí
 solo.
 
 \textbf{Respuesta a las preguntas planteadas.} P1: sí, el texto por sí solo
-predice la satisfacción con un ROC-AUC de 0,9649. P2: sí, y esa cifra se
+predice la satisfacción con un ROC-AUC de 0,9701. P2: sí, y esa cifra se
 obtiene precisamente sobre medicamentos nunca vistos. P3: los aspectos que
 concentran la insatisfacción no son los esperados, como se ha discutido.
 
@@ -801,7 +885,7 @@ datos.
 
 \textbf{P1. ¿Puede predecirse la satisfacción del paciente solo con el texto?}
 Sí, y con margen. Sin conocer el medicamento, la condición ni la edad del
-paciente —únicamente lo que escribe— el modelo alcanza un ROC-AUC de 0,9649. La
+paciente —únicamente lo que escribe— el modelo alcanza un ROC-AUC de 0,9701. La
 señal está en el lenguaje, no en los metadatos.
 
 \textbf{P2. ¿Generaliza a medicamentos que nunca ha visto?} Sí, y esta es la
@@ -819,10 +903,10 @@ no es sufrir efectos adversos, sino percibir que el tratamiento funciona.
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{La representación importa más que el algoritmo.} Random Forest,
-        el único modelo capaz de captar relaciones no lineales, queda cuatro
+        el único modelo capaz de captar relaciones no lineales, queda casi seis
         puntos de ROC-AUC por detrás de una regresión logística. No por ser peor
         algoritmo, sino porque para poder ejecutarse necesita una compresión que
-        conserva el 8,4\,\% de la varianza y destruye los términos poco
+        conserva el 8,3\,\% de la varianza y destruye los términos poco
         frecuentes pero muy discriminantes.
   \item \textbf{La partición decide la credibilidad de las cifras.} Agrupar por
         medicamento en lugar de dividir al azar es la decisión metodológica con
@@ -841,7 +925,7 @@ no es sufrir efectos adversos, sino percibir que el tratamiento funciona.
 
 \begin{itemize}[leftmargin=*]
   \item \textbf{El modelo detecta peor lo negativo}, que es lo que más importa:
-        una de cada cinco reseñas desfavorables pasa desapercibida. Se mitiga
+        el 17,8\,\% de las reseñas desfavorables pasa desapercibido. Se mitiga
         con el umbral de alerta, pero no se elimina.
   \item \textbf{No entiende la reserva sin palabras negativas.} La
         sección~\ref{sec:productivizacion} muestra un caso real: una paciente
@@ -869,6 +953,13 @@ ejecutable acabó siendo la causa de su peor rendimiento. Es un buen recordatori
 de que una restricción computacional puede convertirse, sin advertirlo, en una
 limitación metodológica.
 
+La tercera, y la más instructiva, fue el asunto de las negaciones. Descubrir
+que el modelo no distinguía \textit{«it did work»} de \textit{«it did not
+work»} obligó a revisar una opción que había aceptado sin cuestionar, por venir
+por defecto en la librería. Corregirla mejoró el F1 macro en 1,2 puntos. La
+lección: los valores por defecto encierran supuestos, y conviene comprobar si
+esos supuestos encajan con el problema que uno tiene entre manos.
+
 Por último, medir siempre contra un \textit{baseline} trivial evitó un error de
 lectura: un F1 de 0,86 parecía un buen resultado hasta comprobar que se
 alcanzaba prediciendo siempre la misma clase.
@@ -876,9 +967,10 @@ alcanzaba prediciendo siempre la misma clase.
 \subsection{Líneas futuras}
 
 \begin{itemize}[nosep,leftmargin=*]
-  \item \textbf{Modelos basados en Transformers.} Un modelo tipo BERT ajustado
-        al dominio médico debería capturar mejor la negación y la ironía, las
-        dos fuentes de error más frecuentes.
+  \item \textbf{Modelos basados en Transformers.} Conservar las negaciones
+        mitiga el problema, pero no lo resuelve: el modelo sigue sin entender el
+        alcance de una negación ni la ironía. Un modelo tipo BERT, que procesa
+        la frase completa en lugar de una bolsa de términos, es la vía natural.
   \item \textbf{Umbral optimizado por coste.} Ajustar el umbral maximizando una
         función de coste explícita en lugar de fijarlo heurísticamente.
   \item \textbf{Detección de emergentes.} Vigilar la aparición de términos
@@ -1054,10 +1146,10 @@ comparativa.
 \begin{tabular}{@{}llcccc@{}}
 \toprule
 \textbf{Modelo} & \textbf{Clase} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1} & \textbf{Casos} \\ \midrule
-SVM lineal          & Negativa & 0,8661 & 0,7972 & 0,8302 & 8.683 \\
-                    & Positiva & 0,9379 & 0,9613 & 0,9494 & 27.644 \\ \addlinespace
-Random Forest (LSA) & Negativa & 0,6807 & 0,7632 & 0,7196 & 8.683 \\
-                    & Positiva & 0,9227 & 0,8876 & 0,9048 & 27.644 \\ \bottomrule
+SVM lineal          & Negativa & 0,8752 & 0,8217 & 0,8476 & 8.683 \\
+                    & Positiva & 0,9451 & 0,9632 & 0,9540 & 27.644 \\ \addlinespace
+Random Forest (LSA) & Negativa & 0,6842 & 0,7709 & 0,7250 & 8.683 \\
+                    & Positiva & 0,9251 & 0,8883 & 0,9063 & 27.644 \\ \bottomrule
 \end{tabular}
 \end{center}
 

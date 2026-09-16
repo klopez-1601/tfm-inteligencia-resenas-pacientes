@@ -4,8 +4,8 @@
   "pct_positivas_train": 0.7188,
   "estrategia_particion": "GroupShuffleSplit agrupado por drugName (80/20)",
   "mejor_modelo": "SVM lineal",
-  "validacion_cruzada_f1_media": 0.9358,
-  "validacion_cruzada_f1_desv": 0.0006,
+  "validacion_cruzada_f1_media": 0.9423,
+  "validacion_cruzada_f1_desv": 0.0007,
   "resultados": [
     {
       "modelo": "Baseline (clase mayoritaria)",
@@ -46,148 +46,148 @@
     },
     {
       "modelo": "Naive Bayes (Complement)",
-      "accuracy": 0.8594,
-      "precision": 0.9358,
-      "recall": 0.8753,
-      "f1": 0.9045,
-      "f1_macro": 0.8189,
-      "roc_auc": 0.9235,
+      "accuracy": 0.8687,
+      "precision": 0.9401,
+      "recall": 0.8837,
+      "f1": 0.9111,
+      "f1_macro": 0.8302,
+      "roc_auc": 0.9314,
       "segundos_entrenamiento": 0.0,
       "informe": {
         "0": {
-          "precision": 0.6708062667176156,
-          "recall": 0.8087066682022342,
-          "f1-score": 0.7333298522270377,
+          "precision": 0.689198336717919,
+          "recall": 0.8207992629275596,
+          "f1-score": 0.7492640874684608,
           "support": 8683.0
         },
         "1": {
-          "precision": 0.9357670443559303,
-          "recall": 0.8753436550426855,
-          "f1-score": 0.9045474085565295,
+          "precision": 0.9401216039405834,
+          "recall": 0.8837360729272175,
+          "f1-score": 0.911057244079806,
           "support": 27644.0
         },
-        "accuracy": 0.8594158614804416,
+        "accuracy": 0.8686927079032125,
         "macro avg": {
-          "precision": 0.8032866555367729,
-          "recall": 0.8420251616224599,
-          "f1-score": 0.8189386303917836,
+          "precision": 0.8146599703292512,
+          "recall": 0.8522676679273885,
+          "f1-score": 0.8301606657741334,
           "support": 36327.0
         },
         "weighted avg": {
-          "precision": 0.8724352406773032,
-          "recall": 0.8594158614804416,
-          "f1-score": 0.8636224204868024,
+          "precision": 0.8801450925497613,
+          "recall": 0.8686927079032125,
+          "f1-score": 0.8723849072819336,
           "support": 36327.0
         }
       }
     },
     {
       "modelo": "Regresión Logística",
-      "accuracy": 0.9171,
-      "precision": 0.9608,
-      "recall": 0.9291,
-      "f1": 0.9446,
-      "f1_macro": 0.89,
-      "roc_auc": 0.9647,
-      "segundos_entrenamiento": 3.3,
+      "accuracy": 0.9241,
+      "precision": 0.9654,
+      "recall": 0.9337,
+      "f1": 0.9493,
+      "f1_macro": 0.8992,
+      "roc_auc": 0.9698,
+      "segundos_entrenamiento": 2.1,
       "informe": {
         "0": {
-          "precision": 0.7956227201667535,
-          "recall": 0.8791892203155591,
-          "f1-score": 0.8353211511106248,
+          "precision": 0.8088833281201127,
+          "recall": 0.8934699988483243,
+          "f1-score": 0.8490751887928204,
           "support": 8683.0
         },
         "1": {
-          "precision": 0.9607586413287446,
-          "recall": 0.9290623643466936,
-          "f1-score": 0.9446446961894953,
+          "precision": 0.9654024536205865,
+          "recall": 0.933692663869194,
+          "f1-score": 0.9492828245678558,
           "support": 27644.0
         },
-        "accuracy": 0.9171415200814821,
+        "accuracy": 0.9240785090979161,
         "macro avg": {
-          "precision": 0.8781906807477491,
-          "recall": 0.9041257923311263,
-          "f1-score": 0.88998292365006,
+          "precision": 0.8871428908703496,
+          "recall": 0.9135813313587592,
+          "f1-score": 0.8991790066803381,
           "support": 36327.0
         },
         "weighted avg": {
-          "precision": 0.9212873058634,
-          "recall": 0.9171415200814821,
-          "f1-score": 0.9185138199288674,
+          "precision": 0.9279907332274735,
+          "recall": 0.9240785090979161,
+          "f1-score": 0.9253308631773024,
           "support": 36327.0
         }
       }
     },
     {
       "modelo": "SVM lineal",
-      "accuracy": 0.9221,
-      "precision": 0.9379,
-      "recall": 0.9613,
-      "f1": 0.9494,
-      "f1_macro": 0.8898,
-      "roc_auc": 0.9649,
-      "segundos_entrenamiento": 5.3,
+      "accuracy": 0.9294,
+      "precision": 0.9451,
+      "recall": 0.9632,
+      "f1": 0.954,
+      "f1_macro": 0.9008,
+      "roc_auc": 0.9701,
+      "segundos_entrenamiento": 2.7,
       "informe": {
         "0": {
-          "precision": 0.8661161161161162,
-          "recall": 0.7971899113209721,
-          "f1-score": 0.8302248875562219,
+          "precision": 0.8752453385672228,
+          "recall": 0.8217206034780605,
+          "f1-score": 0.8476388476388477,
           "support": 8683.0
         },
         "1": {
-          "precision": 0.9378507146638433,
-          "recall": 0.9612935899290985,
-          "f1-score": 0.94942746387038,
+          "precision": 0.9450576752440106,
+          "recall": 0.9632108233251339,
+          "f1-score": 0.9540479048352711,
           "support": 27644.0
         },
-        "accuracy": 0.9220689845018857,
+        "accuracy": 0.9293913617970105,
         "macro avg": {
-          "precision": 0.9019834153899797,
-          "recall": 0.8792417506250353,
-          "f1-score": 0.889826175713301,
+          "precision": 0.9101515069056167,
+          "recall": 0.8924657134015972,
+          "f1-score": 0.9008433762370593,
           "support": 36327.0
         },
         "weighted avg": {
-          "precision": 0.9207044730476924,
-          "recall": 0.9220689845018857,
-          "f1-score": 0.9209352688051163,
+          "precision": 0.9283708990344542,
+          "recall": 0.9293913617970105,
+          "f1-score": 0.9286136591327209,
           "support": 36327.0
         }
       }
     },
     {
       "modelo": "Random Forest (sobre LSA)",
-      "accuracy": 0.8578,
-      "precision": 0.9227,
-      "recall": 0.8876,
-      "f1": 0.9048,
-      "f1_macro": 0.8122,
-      "roc_auc": 0.9092,
-      "segundos_entrenamiento": 30.3,
+      "accuracy": 0.8602,
+      "precision": 0.9251,
+      "recall": 0.8883,
+      "f1": 0.9063,
+      "f1_macro": 0.8156,
+      "roc_auc": 0.9121,
+      "segundos_entrenamiento": 19.5,
       "informe": {
         "0": {
-          "precision": 0.6807395993836671,
-          "recall": 0.7632154785212484,
-          "f1-score": 0.7196221088066023,
+          "precision": 0.6842481856281304,
+          "recall": 0.7709317056316941,
+          "f1-score": 0.7250081230369327,
           "support": 8683.0
         },
         "1": {
-          "precision": 0.9226835138387485,
-          "recall": 0.8875705397192881,
-          "f1-score": 0.9047864886791062,
+          "precision": 0.9250678119349005,
+          "recall": 0.8882578498046593,
+          "f1-score": 0.9062892153244261,
           "support": 27644.0
         },
-        "accuracy": 0.8578467806314862,
+        "accuracy": 0.8602141657720153,
         "macro avg": {
-          "precision": 0.8017115566112079,
-          "recall": 0.8253930091202683,
-          "f1-score": 0.8122042987428542,
+          "precision": 0.8046579987815154,
+          "recall": 0.8295947777181767,
+          "f1-score": 0.8156486691806795,
           "support": 36327.0
         },
         "weighted avg": {
-          "precision": 0.8648532771218858,
-          "recall": 0.8578467806314862,
-          "f1-score": 0.860527884598589,
+          "precision": 0.8675063062993764,
+          "recall": 0.8602141657720153,
+          "f1-score": 0.8629588075194242,
           "support": 36327.0
         }
       }
@@ -197,206 +197,206 @@
   "terminos_influyentes": {
     "hacia_negativo": [
       {
+        "termino": "not recommend",
+        "peso": -18.7325
+      },
+      {
+        "termino": "not worth",
+        "peso": -15.7504
+      },
+      {
         "termino": "worse",
-        "peso": -14.1398
-      },
-      {
-        "termino": "disappointed",
-        "peso": -11.3165
-      },
-      {
-        "termino": "worst",
-        "peso": -9.9006
+        "peso": -14.0275
       },
       {
         "termino": "don recommend",
-        "peso": -9.5895
+        "peso": -12.1038
       },
       {
-        "termino": "gained",
-        "peso": -8.8566
+        "termino": "disappointed",
+        "peso": -10.7001
       },
       {
-        "termino": "useless",
-        "peso": -8.6711
-      },
-      {
-        "termino": "horrible",
-        "peso": -8.3825
-      },
-      {
-        "termino": "stopped taking",
-        "peso": -8.2987
+        "termino": "no improvement",
+        "peso": -10.2347
       },
       {
         "termino": "wouldn recommend",
-        "peso": -8.0809
+        "peso": -10.0614
+      },
+      {
+        "termino": "worst",
+        "peso": -9.8978
+      },
+      {
+        "termino": "does nothing",
+        "peso": -9.0762
+      },
+      {
+        "termino": "no relief",
+        "peso": -9.0481
+      },
+      {
+        "termino": "never",
+        "peso": -8.6195
+      },
+      {
+        "termino": "useless",
+        "peso": -8.4434
+      },
+      {
+        "termino": "gained",
+        "peso": -8.4405
+      },
+      {
+        "termino": "stopped taking",
+        "peso": -8.1023
+      },
+      {
+        "termino": "horrible",
+        "peso": -7.8947
+      },
+      {
+        "termino": "not working",
+        "peso": -7.8556
+      },
+      {
+        "termino": "not",
+        "peso": -7.7992
+      },
+      {
+        "termino": "not good",
+        "peso": -7.7649
+      },
+      {
+        "termino": "never recommend",
+        "peso": -7.7359
       },
       {
         "termino": "ruined",
-        "peso": -7.7459
+        "peso": -7.6534
+      },
+      {
+        "termino": "absolutely nothing",
+        "peso": -7.5535
       },
       {
         "termino": "doesn work",
-        "peso": -7.3848
+        "peso": -7.5374
+      },
+      {
+        "termino": "did nothing",
+        "peso": -7.3357
+      },
+      {
+        "termino": "not effective",
+        "peso": -7.2403
       },
       {
         "termino": "depressed",
-        "peso": -7.3461
-      },
-      {
-        "termino": "waste",
-        "peso": -7.287
-      },
-      {
-        "termino": "stay away",
-        "peso": -6.8893
-      },
-      {
-        "termino": "glad works",
-        "peso": -6.87
-      },
-      {
-        "termino": "terrible",
-        "peso": -6.8178
-      },
-      {
-        "termino": "hopes",
-        "peso": -6.804
-      },
-      {
-        "termino": "removed",
-        "peso": -6.7312
-      },
-      {
-        "termino": "ridiculous",
-        "peso": -6.578
-      },
-      {
-        "termino": "nightmare",
-        "peso": -6.5349
-      },
-      {
-        "termino": "poison",
-        "peso": -6.4952
-      },
-      {
-        "termino": "bleeding",
-        "peso": -6.4667
-      },
-      {
-        "termino": "calling",
-        "peso": -6.1952
-      },
-      {
-        "termino": "garbage",
-        "peso": -6.0932
-      },
-      {
-        "termino": "awful",
-        "peso": -6.0131
+        "peso": -7.2096
       }
     ],
     "hacia_positivo": [
       {
         "termino": "love",
-        "peso": 19.406
+        "peso": 18.6144
       },
       {
         "termino": "amazing",
-        "peso": 15.3785
+        "peso": 14.5447
       },
       {
         "termino": "miracle",
-        "peso": 14.9193
-      },
-      {
-        "termino": "changed life",
-        "peso": 12.7214
-      },
-      {
-        "termino": "saved",
-        "peso": 12.6956
-      },
-      {
-        "termino": "great",
-        "peso": 12.2469
+        "peso": 14.403
       },
       {
         "termino": "works",
-        "peso": 12.1092
+        "peso": 12.3835
+      },
+      {
+        "termino": "saved",
+        "peso": 12.3112
+      },
+      {
+        "termino": "changed life",
+        "peso": 12.1325
+      },
+      {
+        "termino": "great",
+        "peso": 12.0575
       },
       {
         "termino": "best",
-        "peso": 12.0654
+        "peso": 11.9784
       },
       {
         "termino": "years",
-        "peso": 11.0892
+        "peso": 10.8384
       },
       {
-        "termino": "excellent",
-        "peso": 10.4385
-      },
-      {
-        "termino": "wonderful",
-        "peso": 10.3791
-      },
-      {
-        "termino": "highly recommend",
-        "peso": 9.1926
-      },
-      {
-        "termino": "grateful",
-        "peso": 9.1917
-      },
-      {
-        "termino": "thankful",
-        "peso": 9.0389
-      },
-      {
-        "termino": "overall",
-        "peso": 9.0378
-      },
-      {
-        "termino": "helps",
-        "peso": 8.9848
-      },
-      {
-        "termino": "awesome",
-        "peso": 8.9586
+        "termino": "no effects",
+        "peso": 10.5929
       },
       {
         "termino": "happy",
-        "peso": 8.9441
+        "peso": 10.2131
       },
       {
-        "termino": "far good",
-        "peso": 8.9257
+        "termino": "excellent",
+        "peso": 10.1949
+      },
+      {
+        "termino": "wonderful",
+        "peso": 9.8179
+      },
+      {
+        "termino": "recommend",
+        "peso": 9.4536
       },
       {
         "termino": "pleased",
-        "peso": 8.8206
+        "peso": 9.3997
       },
       {
-        "termino": "complaint",
-        "peso": 8.7127
+        "termino": "grateful",
+        "peso": 9.0111
       },
       {
-        "termino": "thank",
-        "peso": 8.6671
-      },
-      {
-        "termino": "wonders",
-        "peso": 8.5736
+        "termino": "helps",
+        "peso": 8.9762
       },
       {
         "termino": "cleared",
-        "peso": 8.5662
+        "peso": 8.7596
+      },
+      {
+        "termino": "thankful",
+        "peso": 8.6568
+      },
+      {
+        "termino": "overall",
+        "peso": 8.5538
+      },
+      {
+        "termino": "complaint",
+        "peso": 8.5435
+      },
+      {
+        "termino": "thank",
+        "peso": 8.4281
+      },
+      {
+        "termino": "awesome",
+        "peso": 8.3933
+      },
+      {
+        "termino": "far good",
+        "peso": 8.3401
       },
       {
         "termino": "gone",
-        "peso": 8.5156
+        "peso": 8.3276
       }
     ]
   },
@@ -405,6 +405,7 @@
     "Naive Bayes (Complement)": "Muy rápido y sólido en texto; la variante Complement corrige el sesgo del NB multinomial cuando las clases están desbalanceadas. Debilidad: asume independencia entre términos.",
     "Regresión Logística": "Lineal, probabilístico e interpretable: sus coeficientes permiten explicar la predicción a un perfil de negocio. Se usa el solver liblinear, muy eficiente en problemas binarios y dispersos.",
     "SVM lineal": "Referencia clásica en clasificación de texto de alta dimensión. Se calibra para obtener probabilidades, al coste de triplicar el tiempo de entrenamiento.",
-    "Random Forest (sobre LSA)": "No lineal y basado en árboles: comprueba si existen interacciones que los modelos lineales no capturan. Requiere reducir antes la dimensionalidad con SVD, lo que sacrifica interpretabilidad."
-  }
+    "Random Forest (sobre LSA)": "No lineal y basado en árboles: comprueba si existen interacciones que los modelos lineales no capturan. Requiere reducir antes la dimensionalidad con SVD, lo que sacrifica interpretabilidad. Se limita la profundidad a 14 niveles: sin ese límite los árboles crecen hasta hacer el entrenamiento inviable (más de 5 minutos) sin mejora apreciable del resultado."
+  },
+  "nota_stopwords": "Vectorizador con la lista de stopwords inglesa MENOS las negaciones (not, no, never...), que la lista estándar descarta."
 }
